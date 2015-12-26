@@ -1,121 +1,50 @@
 #include "chip8.h"
-#include <stdlib.h>
-#include <time.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <iostream>
-#include <fstream>
 
-bool theflag = false;
-
+/* Hexadecimal Sprite Bit Map loaded into Interpreter Area of CHIP 8 Memory (0x000 - 0x1FF) */
 uint8_t SPRITE_MAP[80] = {
-    0xF0,       //Hex digit 0
-    0x90,
-    0x90,
-    0x90,
-    0xF0,
-
-    0x20,       //Hex digit 1   
-    0x60,
-    0x20,
-    0x20,
-    0x70,
-
-    0xF0,       //Hex digit 2
-    0x10,
-    0xF0,
-    0x80,
-    0xF0,
-
-    0xF0,       //Hex digit 3
-    0x10,
-    0xF0,
-    0x10,
-    0xF0,
-
-    0x90,       //Hex digit 4
-    0x90,
-    0xF0,
-    0x10,
-    0x10,
-
-    0xF0,       //Hex digit 5
-    0x80,
-    0xF0,
-    0x10,
-    0xF0,
-
-    0xF0,       //Hex digit 6
-    0x80,
-    0xF0,
-    0x90,
-    0xF0,
-
-    0xF0,       //Hex digit 7
-    0x10,
-    0x20,
-    0x40,
-    0x40,
-
-    0xF0,       //Hex digit 8
-    0x90,
-    0xF0,
-    0x90,
-    0xF0,
-
-    0xF0,       //Hex digit 9
-    0x90,
-    0xF0,
-    0x10,
-    0xF0,
-
-    0xF0,       //Hex digit A
-    0x90,
-    0xF0,
-    0x90,
-    0x90,
-
-    0xE0,       //Hex digit B
-    0x90,
-    0xE0,
-    0x90,
-    0xE0,
-
-    0xF0,       //Hex digit C
-    0x80,
-    0x80,
-    0x80,
-    0xF0,
-
-    0xE0,       //Hex digit D
-    0x90,
-    0x90,
-    0x90,
-    0xE0,
-
-    0xF0,       //Hex digit E
-    0x80,
-    0xF0,
-    0x80,
-    0xF0,
-
-    0xF0,       //Hex digit F
-    0x80,
-    0xF0,
-    0x80,
-    0x80
+    0xF0, 0x90, 0x90, 0x90, 0xF0,  //Hex digit 0
+    0x20, 0x60, 0x20, 0x20, 0x70,  //Hex digit 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0,  //Hex digit 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0,  //Hex digit 3
+    0x90, 0x90, 0xF0, 0x10, 0x10,  //Hex digit 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0,  //Hex digit 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0,  //Hex digit 6
+    0xF0, 0x10, 0x20, 0x40, 0x40,  //Hex digit 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0,  //Hex digit 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0,  //Hex digit 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90,  //Hex digit A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0,  //Hex digit B
+    0xF0, 0x80, 0x80, 0x80, 0xF0,  //Hex digit C
+    0xE0, 0x90, 0x90, 0x90, 0xE0,  //Hex digit D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0,  //Hex digit E
+    0xF0, 0x80, 0xF0, 0x80, 0x80   //Hex digit F
 };
+
+/*
+ * CHIP8
+ * Description: Main constructor for CHIP8 object, initializes graphic components
+ *				and clears all internal registers.  Sets PC to program start.  Loads
+ *				CHIP8 memory 0x000-0x1FF with Hex Sprite data.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
 
 CHIP8::CHIP8()
 {
+	//Initialize graphics
 	CHIPVIDEO = VIDEO();
 	CHIPVIDEO.init();
 	CHIPVIDEO.show();
+
+	//Initialize internals
 	PC = PC_START;
 	SP = 0xFF;
 	I = 0x00;
 	DT = 0x00;
 	ST = 0x00;
+
+	//Clear stack, V registers, and memory
 	for(int i = 0; i < MEM_SIZE; i++){
 		if(i < STACK_SIZE)
 			STACK[i] = 0;
@@ -123,14 +52,18 @@ CHIP8::CHIP8()
 			V[i] = 0;
 		MEM[i] = 0;
 	}
+
+	//Load Hex sprites into memory
 	load_hex_sprites();
 }
 
-CHIP8::~CHIP8(){}
-
-void CHIP8::mod_I(uint16_t val){
-	I = val;
-}
+/*
+ * load_hex_sprites
+ * Description: Reads data from Sprite Map and stores into memory.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
 
 void CHIP8::load_hex_sprites(){
 	for(int i = 0; i < MAP_LENGTH; i++){
@@ -138,15 +71,227 @@ void CHIP8::load_hex_sprites(){
 	}
 }
 
-void CHIP8::load_program(const char* program_name){
-	uint8_t program_data[0xA00];
-	for(int i = 0; i<0xA00; i++) program_data[i] = 0x00;
-	FILE* program_file = fopen(program_name, "r+");
-	fread(program_data, sizeof(uint8_t), 2560, program_file);
-	fclose(program_file);
-	for(int i = 0; i<0xA00; i++) MEM[PC_START + i] = program_data[i];
+/*
+ * ~CHIP8
+ * Description: Main destructor for CHIP8 object, CHIP8 does not allocate space for
+ *				its own variables so we need to make sure SDL window closes properly.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
+CHIP8::~CHIP8(){
+	CHIPVIDEO.close();
 }
 
+/*
+ * load_program
+ * Description: Reads binary file CHIP8 program and stores data into memory starting 
+ *				at address 0x200.
+ * Inputs: program_name - A string containing the file name of the program to load.
+ * Outputs: None
+ * Return Value: None
+*/
+
+void CHIP8::load_program(const char* program_name){
+	//Temporary data array, clear contents so we don't load garbage
+	uint8_t program_data[MAX_PROG_SIZE];
+	for(int i = 0; i<MAX_PROG_SIZE; i++) program_data[i] = 0x00;
+
+	//Read the file into the data array
+	FILE* program_file = fopen(program_name, "r+");
+	fread(program_data, sizeof(uint8_t), MAX_PROG_SIZE, program_file);
+	fclose(program_file);
+
+	//Copy from the data array into memory, this can be skipped by having fread read directly into the correct starting address of memory
+	//**********************************************************************************************************************************
+	for(int i = 0; i<MAX_PROG_SIZE; i++) MEM[PC_START + i] = program_data[i];
+}
+
+/*
+ * mainloop
+ * Description: The main emulation loop of CHIP8.  Grabs current opcode from memory location
+ *				indicated by PC, increments the PC by 2, executes the opcode, checks to 
+ *				display new video frame at 60Hz.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
+void CHIP8::mainloop(){
+	//Opcode and time variables
+	unsigned short opcode;
+	time_t now, prev;
+	time(&prev);
+
+	while(true){
+		print_sys_contents();
+
+		//Break out if PC escapes memory
+		if(PC > MEM_SIZE) break;
+
+		//Grab Opcode
+		opcode = MEM[PC];
+		opcode <<= 8;
+		opcode |= MEM[PC+1];
+
+		//Increment Program Counter
+		PC += 2;
+
+		//Execute opcode
+		exec_op(opcode);
+
+		//Check if we should update Sound Timer, Delay Timer, and video frame
+		time(&now);
+		if(difftime(now, prev) > 0.016){
+			prev = now;
+			show_video();
+			if(ST != 0) ST--;
+			if(DT != 0) DT--;
+		}
+	}
+}
+
+/*
+ * draw_sprite
+ * Description: Helper function for handling DXYN instruction for CHIP8.
+ * Inputs: x - CHIP8 x coordinate to start drawing sprite at
+ *		   y - CHIP8 y coordinate to start drawing sprite at
+ *		   nibble - Number of bytes that make up the sprite
+ * Outputs: None
+ * Return Value: None
+*/
+
+void CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble){
+	//Set VF to 0
+	V[0xF] = 0;
+	
+	//Iterate through each line of sprite
+	for(int line = 0; line < nibble; line++){
+		//Grab the byte for the line
+		uint8_t byte = MEM[I + line];
+
+		//Update the CHIP8 y coordinate 
+		uint32_t pix_y = y + line;
+
+		//Iterate through each bit in the byte
+		for(int bit = 0; bit < 8; bit++){
+			//Update the CHIP8 x coordinate
+			uint32_t pix_x = x + bit;
+
+			//Only perform XOR on screen pixel if we have a '1'
+			if((byte << bit) & 0x80){
+				//Set the VF flag if we have a collision
+				if(CHIPVIDEO.xor_color(pix_x, pix_y)) V[0xF] = 1;
+			}
+		}
+	}
+}
+
+/*
+ * show_video
+ * Description: Makes a call to the VIDEO's show function, updates the frame
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
+void CHIP8::show_video(){
+	CHIPVIDEO.show();
+}
+
+/*
+ * exec_op
+ * Description: Executes the current opcode and updates internal registers
+ * Inputs: opcode - The 16-bit opcode to execute
+ * Outputs: None
+ * Return Value: None
+*/
+
+void CHIP8::exec_op(uint16_t opcode){
+	//Extract all argument information from the opcode
+	uint8_t x = (uint8_t)((opcode >> 8) & 0x0F);
+	uint8_t y = (uint8_t)((opcode >> 4) & 0x0F);
+	uint8_t kk = (uint8_t)(opcode & 0xFF);
+	uint8_t nibble = (uint8_t)(opcode & 0x0F);
+
+	//Seed random generator
+	srand(time(NULL));
+
+	//Decode and execute opcode
+	if((opcode >> 12) == 0x0){
+		//Two opcodes have first hex zero
+		switch(opcode){
+			case 0xE0 : CHIPVIDEO.clear();			//CLS - Clear Display
+						break;
+			case 0xEE : PC = STACK[SP], SP -= 1;	//RET - Restore PC from stack, decrement Stack Pointer
+						break;
+		}
+	}
+	if((opcode >> 12) == 0x1) PC = (0x0FFF & opcode);	//JMP - PC gets value of lower 12 bits
+	if((opcode >> 12) == 0x2) SP += 1, STACK[SP] = PC, PC = (0x0FFF & opcode);	//CALL - Increment Stack Pointer, store PC, PC gets lower 12 bits
+	if((opcode >> 12) == 0x3) PC = ((V[x] == kk) ? PC+2 : PC);		//Skip Equal, skip next instruction if Vx == kk
+	if((opcode >> 12) == 0x4) PC = ((V[x] != kk) ? PC+2 : PC);		//Skip Not Equal, skip next instruction if Vx != kk
+	if((opcode >> 12) == 0x5) PC = ((V[x] == V[y]) ? PC+2 : PC);	//Skip Equal, skip next instruction if Vx == Vy
+	if((opcode >> 12) == 0x6) V[x] = kk;	//LoaD Vx with kk
+	if((opcode >> 12) == 0x7) V[x] += kk;	//ADD kk to Vx
+	if((opcode >> 12) == 0x8){				//Nine opcodes begin with Hex 8
+		switch(opcode & 0xF){
+			case 0x0: V[x] = V[y];			//LoaD Vx with Vy
+					  break;
+			case 0x1: V[x] |= V[y];			//OR Vx with Vy
+					  break;
+			case 0x2: V[x] &= V[y];			//AND Vx with Vy
+					  break;
+			case 0x3: V[x] ^= V[y];			//XOR Vx with Vy
+					  break;
+			case 0x4: V[0xF] = (((V[x] + V[y]) > 255) ? 1 : 0), V[x] += V[y];	//Add Vx with Vy, store carry bit into VF
+					  break;
+			case 0x5: V[0xF] = ((V[x] > V[y]) ? 1 : 0), V[x] -= V[y];			//Subtract Vy from Vx, store borrow bit into VF
+					  break;
+			case 0x6: V[0xF] = ((V[x] & 0x1) ? 1 : 0), V[x] = (V[x] >> 1);		//VF gets LSB of Vx, Vx gets bitshifted to the right by 1
+					  break;
+			case 0x7: V[0xF] = ((V[y] > V[x]) ? 1 : 0), V[x] = V[y] - V[x];		//Vx gets Vy - Vx, store borrow bit into VF
+					  break;
+			case 0xE: V[0xF] = ((V[x] & 0x8000) ? 1 : 0), V[x] = (V[x] << 1);	//VF gets MSB of Vx, Vx gets bitshifted to the left by 1
+					  break;
+			default: ;
+		}
+ 	}
+ 	if((opcode >> 12) == 0x9) PC = ((V[x] != V[y]) ? PC + 2 : PC);		//Skip Not Equal, skip next instruction if Vx != Vy
+ 	if((opcode >> 12) == 0xA) I = (opcode & 0xFFF);						//LoaD I, I gets lower 12 bits of opcode
+ 	if((opcode >> 12) == 0xB) PC = V[0] + (opcode & 0xFFF);				//JMP, PC gets V0 + lower 12 bits of opcode
+ 	if((opcode >> 12) == 0xC) V[x] = (rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
+ 	if((opcode >> 12) == 0xD) draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
+ 	if((opcode >> 12) == 0xE){				//2 Opcodes begin with Hex E
+ 		if((opcode & 0xFF) == 0x9E) ; //Input related 
+ 		if((opcode & 0xFF) == 0xA1) ; //Input related
+ 	}
+ 	if((opcode >> 12) == 0xF){				//Nine opcodes begin with Hex F
+ 		switch(opcode & 0xFF){
+ 			case 0x7: V[x] = DT;			//Vx gets Delay Timer value
+ 					  break;
+ 			case 0xA: ;//Input related
+ 					  break;
+ 			case 0x15: DT = V[x];			//Delay Timer gets Vx
+ 					   break;
+ 			case 0x18: ST = V[x];			//Sound Timer gets Vx
+ 					   break;
+ 			case 0x1E: I += V[x];			//I gets incremented by Vx
+ 					   break;
+ 			case 0x29: I = 5*V[x];			//I gets address of sprite corresponding to value in Vx
+ 					   break;
+ 			case 0x33: MEM[I] = (V[x] % 1000) / 100, MEM[I+1] = (V[x] % 100) / 10, MEM[I+2] = (V[x] % 10);		//Store BCD representation of Vx in I, I+1, I+2
+ 					   break;
+ 			case 0x55: for(int i = 0; i <= x; i++) MEM[I+i] = V[i];		//Store V0 through Vx starting at memory I
+ 					   break;
+ 			case 0x65: for(int i = 0; i<= x; i++) V[i] = MEM[I + i];	//Load V0 through Vx with values starting at memory I
+ 					   break;
+ 		}
+ 	}
+}
+
+/* Debugging functions */
 void CHIP8::print_mem_contents(){
 	for(int i = PC_START; i < MEM_SIZE; i+=2) printf("%x: %x%x\n", i, MEM[i], MEM[i+1]);
 }
@@ -158,123 +303,3 @@ void CHIP8::print_sys_contents(){
 	}
 	printf("\n");
 }
-
-void CHIP8::mainloop(){
-	unsigned short opcode;
-	time_t now, prev;
-	time(&prev);
-	while(true){
-		print_sys_contents();
-		if(PC > MEM_SIZE) break;
-		opcode = MEM[PC];
-		opcode <<= 8;
-		opcode |= MEM[PC+1];
-		PC += 2;
-		exec_op(opcode);
-		show_video();
-		time(&now);
-		if(difftime(now, prev) > 0.016){
-			prev = now;
-			show_video();
-			if(ST != 0) ST--;
-			if(DT != 0) DT--;
-		}
-	}
-}
-
-void CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble){
-	V[0xF] = 0;
-	for(int line = 0; line < nibble; line++){
-		uint8_t byte = MEM[I + line];
-		uint32_t pix_y = y + line;
-		for(int bit = 0; bit < 8; bit++){
-			uint32_t pix_x = x + bit;
-			if((byte << bit) & 0x80){
-				if(CHIPVIDEO.xor_color(pix_x, pix_y)) V[0xF] = 1;
-			}
-		}
-	}
-}
-
-void CHIP8::show_video(){
-	CHIPVIDEO.show();
-}
-
-void CHIP8::exec_op(uint16_t opcode){
-	uint8_t x = (uint8_t)((opcode >> 8) & 0x0F);
-	uint8_t y = (uint8_t)((opcode >> 4) & 0x0F);
-	uint8_t kk = (uint8_t)(opcode & 0xFF);
-	uint8_t nibble = (uint8_t)(opcode & 0x0F);
-	srand(time(NULL));
-
-	if((opcode >> 12) == 0x0){
-		switch(opcode){
-			case 0xE0 : CHIPVIDEO.clear();
-						break;
-			case 0xEE : PC = STACK[SP], SP -= 1;
-						break;
-		}
-	}
-	if((opcode >> 12) == 0x1) PC = (0x0FFF & opcode);
-	if((opcode >> 12) == 0x2) SP += 1, STACK[SP] = PC, PC = (0x0FFF & opcode);
-	if((opcode >> 12) == 0x3) PC = ((V[x] == kk) ? PC+2 : PC);
-	if((opcode >> 12) == 0x4) PC = ((V[x] != kk) ? PC+2 : PC);
-	if((opcode >> 12) == 0x5) PC = ((V[x] == V[y]) ? PC+2 : PC);
-	if((opcode >> 12) == 0x6) V[x] = kk;
-	if((opcode >> 12) == 0x7) V[x] += kk;
-	if((opcode >> 12) == 0x8){
-		switch(opcode & 0xF){
-			case 0x0: V[x] = V[y];
-					  break;
-			case 0x1: V[x] |= V[y];
-					  break;
-			case 0x2: V[x] &= V[y];
-					  break;
-			case 0x3: V[x] ^= V[y];
-					  break;
-			case 0x4: V[0xF] = (((V[x] + V[y]) > 255) ? 1 : 0), V[x] += V[y];
-					  break;
-			case 0x5: V[0xF] = ((V[x] > V[y]) ? 1 : 0), V[x] -= V[y];
-					  break;
-			case 0x6: V[0xF] = ((V[x] & 0x1) ? 1 : 0), V[x] = (V[x] >> 1);
-					  break;
-			case 0x7: V[0xF] = ((V[y] > V[x]) ? 1 : 0), V[x] = V[y] - V[x];
-					  break;
-			case 0xE: V[0xF] = ((V[x] & 0x8000) ? 1 : 0), V[x] = (V[x] << 1);
-					  break;
-			default: ;
-		}
- 	}
- 	if((opcode >> 12) == 0x9) PC = ((V[x] != V[y]) ? PC + 2 : PC);
- 	if((opcode >> 12) == 0xA) I = (opcode & 0xFFF);
- 	if((opcode >> 12) == 0xB) PC = V[0] + (opcode & 0xFFF);
- 	if((opcode >> 12) == 0xC) V[x] = (rand() % 256) & kk;
- 	if((opcode >> 12) == 0xD) draw_sprite(V[x], V[y], nibble); //Display Related
- 	if((opcode >> 12) == 0xE){
- 		if((opcode & 0xFF) == 0x9E) ; //Input related 
- 		if((opcode & 0xFF) == 0xA1) ; //Input related
- 	}
- 	if((opcode >> 12) == 0xF){
- 		switch(opcode & 0xFF){
- 			case 0x7: V[x] = DT;
- 					  break;
- 			case 0xA: ;//Input related
- 					  break;
- 			case 0x15: DT = V[x];
- 					   break;
- 			case 0x18: ST = V[x];
- 					   break;
- 			case 0x1E: I += V[x];
- 					   break;
- 			case 0x29: I = 5*V[x];
- 					   break;
- 			case 0x33: MEM[I] = (V[x] % 1000) / 100, MEM[I+1] = (V[x] % 100) / 10, MEM[I+2] = (V[x] % 10);
- 					   break;
- 			case 0x55: for(int i = 0; i <= x; i++) MEM[I+i] = V[i];
- 					   break;
- 			case 0x65: for(int i = 0; i<= x; i++) V[i] = MEM[I + i];
- 					   break;
- 		}
- 	}
-}
-
