@@ -1,11 +1,40 @@
 #include "graphics.h"
 
+/*
+ * VIDEO
+ * Description: Main constructor for VIDEO object.  Sets the pixel width/height
+ *				depending on the size of the window
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
 VIDEO::VIDEO(){
 	pixel_width = WINDOW_WIDTH / 64;
 	pixel_height = WINDOW_HEIGHT / 32;
 }
 
-VIDEO::~VIDEO(){}
+/*
+ * ~VIDEO
+ * Description: Main destructor for VIDEO object.  Terminates SDL program.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
+VIDEO::~VIDEO(){
+	close();
+}
+
+/*
+ * init
+ * Description: Initializes SDL library and creates window/surface objects
+ *				for drawing graphics.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: success - Boolean value indicating whether all components
+ *						   were initialized properly or not.
+*/
 
 bool VIDEO::init(){
 	//Initialization flag
@@ -38,9 +67,16 @@ bool VIDEO::init(){
 	return success;
 }
 
-uint32_t VIDEO::get_color(uint8_t r, uint8_t g, uint8_t b){
-	return SDL_MapRGB(gSurface->format, r, g, b);
-}
+/*
+ * draw_pixel
+ * Description: Function for drawing a pixel at a given (x, y) coordinate pair for
+ *				the CHIP8's display.  Because the SDL window is not a 1:1 pixel mapping,
+ *				we need to scale the amount of pixels colored in the window based on the
+ *				window size.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
 
 void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
 	uint32_t* pixmem = vid_mem + x*pixel_width + y*pixel_height*WINDOW_WIDTH; //May be an issue with flexible window dimensions
@@ -52,6 +88,15 @@ void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
 		}
 	}
 }
+
+/*
+ * xor_color
+ * Description: Helper function for the CHIP8's Dxyn instruction, checks the pixel color
+ *				at a given CHIP8 (x,y) and XOR's the color.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
 
 bool VIDEO::xor_color(uint8_t x, uint8_t y){
 	uint32_t pix_color = *(vid_mem + y*pixel_height*WINDOW_WIDTH + x*pixel_width);
@@ -66,10 +111,27 @@ bool VIDEO::xor_color(uint8_t x, uint8_t y){
 	}
 }
 
+/*
+ * show
+ * Description: Function for updating the display window.  Must be called at 60Hz to emulate
+ *				CHIP8 display.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
 void VIDEO::show(){
 	//Update the surface
 	SDL_UpdateWindowSurface( gWindow );
 }
+
+/*
+ * clear
+ * Description: Helper function for clearing the game display.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
 
 void VIDEO::clear(){
 	for(int y = 0; y < WINDOW_HEIGHT; y++){
@@ -78,6 +140,14 @@ void VIDEO::clear(){
 		}
 	}
 }
+
+/*
+ * close
+ * Description: Helper function to terminate SDL window and free resources.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
 
 void VIDEO::close(){
 	//Destroy window
@@ -88,3 +158,6 @@ void VIDEO::close(){
 	SDL_Quit();
 }
 
+uint32_t VIDEO::get_color(uint8_t r, uint8_t g, uint8_t b){
+	return SDL_MapRGB(gSurface->format, r, g, b);
+}

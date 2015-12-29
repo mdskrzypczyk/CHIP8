@@ -8,13 +8,13 @@
 
 #ifndef CHIP_H
 #define CHIP_H
-#define MEM_SIZE 4096
-#define REG_SIZE 16
-#define STACK_SIZE 16
-#define PC_START 0x200
-#define MAX_PROG_SIZE 0xA00
-#define ETI_START 0x600
-#define MAP_LENGTH 5*16
+#define MEM_SIZE 4096       //4kB memory
+#define REG_SIZE 16         //16 Registers
+#define STACK_SIZE 16       //16 Stack entries
+#define PC_START 0x200      //Programs start at 0x200
+#define MAX_PROG_SIZE 0xA00 //Maximum allowable size of program
+#define ETI_START 0x600     //Start of ETI area in memory
+#define MAP_LENGTH 5*16     //Size of Sprite Map
 
 class CHIP8
 {
@@ -43,6 +43,7 @@ class CHIP8
         //Function for decoding and executing opcodes
         void exec_op(unsigned short opcode);
 
+        //Debugging Functions
         void print_mem_contents();
 
         void print_sys_contents();
