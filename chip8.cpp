@@ -125,10 +125,10 @@ void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
 	uint32_t start;
-	uint32_t FPS = 90;
+	uint32_t FPS = 60;
 
 	while(true){
-		//print_sys_contents();
+		print_sys_contents();
 		start = SDL_GetTicks();
 
 		//Break out if PC escapes memory
@@ -148,12 +148,11 @@ void CHIP8::mainloop(){
 		CHIPINPUT.poll_keyboard();
 
 		//Check if we should update Sound Timer, Delay Timer, and video frame
-
+		//printf("%d\n", (SDL_GetTicks() - start));
 		if(1000/FPS > SDL_GetTicks() - start){
 			SDL_Delay(1000/FPS - (SDL_GetTicks() - start));
 		}
 		show_video();
-		CHIPINPUT.print_keyboard_status();
 		if(ST != 0) ST--;
 		if(DT != 0) DT--;
 	}
@@ -271,24 +270,25 @@ void CHIP8::exec_op(uint16_t opcode){
  	if((opcode >> 12) == 0xC) V[x] = (rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
  	if((opcode >> 12) == 0xD) draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
  	if((opcode >> 12) == 0xE){				//2 Opcodes begin with Hex E
- 		printf("Checking keyboard");
  		if((opcode & 0xFF) == 0x9E){
- 			if(CHIPINPUT.get_key_status(V[x])) PC+=2; //Input related
+ 			if(CHIPINPUT.get_key_status(V[x]) == true){
+ 				PC+=2; //Input related
+ 			}
  		} 
  		if((opcode & 0xFF) == 0xA1){
- 			if(~CHIPINPUT.get_key_status(V[x])) PC+=2; //Input related
+ 			if(CHIPINPUT.get_key_status(V[x]) == false){
+ 				PC+=2; //Input related
+ 			}
  		}
  	}
  	if((opcode >> 12) == 0xF){				//Nine opcodes begin with Hex F
  		switch(opcode & 0xFF){
  			case 0x7: V[x] = DT;			//Vx gets Delay Timer value
  					  break;
- 			case 0xA: printf("Waiting for key");
- 					  V[x] = CHIPINPUT.poll_keyboard();
+ 			case 0xA: V[x] = CHIPINPUT.poll_keyboard();
  					  while(V[x] == 0xFF){
  					  	V[x] = CHIPINPUT.poll_keyboard();
  					  };
-
  					  break;
  			case 0x15: DT = V[x];			//Delay Timer gets Vx
  					   break;

@@ -96,6 +96,6 @@ bool INPUT::get_key_status(uint8_t key){
 
 void INPUT::print_keyboard_status(){
 	for(int i = 0; i < NUM_KEYS; i++){
-		printf("%d: %d\n", i, key_status[i]);
+		if(key_status[i]) printf("%d: %d\n", i, key_status[i]);
 	}
 }
