@@ -1,4 +1,5 @@
 #include "graphics.h"
+#include "input.h"
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
@@ -50,6 +51,7 @@ class CHIP8
 
     private:
         VIDEO CHIPVIDEO;        //Graphics/Video object for handling sprites and display
+        INPUT CHIPINPUT;
         uint16_t PC;            //16-bit Program Counter
         uint8_t SP;             //8-bit Stack pointer
         uint16_t STACK[STACK_SIZE]; //Stack

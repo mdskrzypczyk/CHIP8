@@ -9,9 +9,11 @@ class INPUT{
 
 		~INPUT();
 
-		void poll_keyboard();
+		uint8_t poll_keyboard();
 
 		bool get_key_status(uint8_t key);
+
+		void print_keyboard_status();
 
 	private:
 		bool key_status[NUM_KEYS];

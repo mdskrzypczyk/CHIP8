@@ -37,6 +37,9 @@ CHIP8::CHIP8()
 	CHIPVIDEO.init();
 	CHIPVIDEO.show();
 
+	//Initialize input
+	CHIPINPUT = INPUT();
+
 	//Initialize internals
 	PC = PC_START;
 	SP = 0xFF;
@@ -121,11 +124,12 @@ void CHIP8::load_program(const char* program_name){
 void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
-	time_t now, prev;
-	time(&prev);
+	uint32_t start;
+	uint32_t FPS = 90;
 
 	while(true){
 		//print_sys_contents();
+		start = SDL_GetTicks();
 
 		//Break out if PC escapes memory
 		if(PC > MEM_SIZE) break;
@@ -141,14 +145,17 @@ void CHIP8::mainloop(){
 		//Execute opcode
 		exec_op(opcode);
 
+		CHIPINPUT.poll_keyboard();
+
 		//Check if we should update Sound Timer, Delay Timer, and video frame
-		time(&now);
-		if(difftime(now, prev) > 0.016){
-			prev = now;
-			show_video();
-			if(ST != 0) ST--;
-			if(DT != 0) DT--;
+
+		if(1000/FPS > SDL_GetTicks() - start){
+			SDL_Delay(1000/FPS - (SDL_GetTicks() - start));
 		}
+		show_video();
+		CHIPINPUT.print_keyboard_status();
+		if(ST != 0) ST--;
+		if(DT != 0) DT--;
 	}
 }
 
@@ -264,14 +271,24 @@ void CHIP8::exec_op(uint16_t opcode){
  	if((opcode >> 12) == 0xC) V[x] = (rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
  	if((opcode >> 12) == 0xD) draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
  	if((opcode >> 12) == 0xE){				//2 Opcodes begin with Hex E
- 		if((opcode & 0xFF) == 0x9E) ; //Input related 
- 		if((opcode & 0xFF) == 0xA1) ; //Input related
+ 		printf("Checking keyboard");
+ 		if((opcode & 0xFF) == 0x9E){
+ 			if(CHIPINPUT.get_key_status(V[x])) PC+=2; //Input related
+ 		} 
+ 		if((opcode & 0xFF) == 0xA1){
+ 			if(~CHIPINPUT.get_key_status(V[x])) PC+=2; //Input related
+ 		}
  	}
  	if((opcode >> 12) == 0xF){				//Nine opcodes begin with Hex F
  		switch(opcode & 0xFF){
  			case 0x7: V[x] = DT;			//Vx gets Delay Timer value
  					  break;
- 			case 0xA: ;//Input related
+ 			case 0xA: printf("Waiting for key");
+ 					  V[x] = CHIPINPUT.poll_keyboard();
+ 					  while(V[x] == 0xFF){
+ 					  	V[x] = CHIPINPUT.poll_keyboard();
+ 					  };
+
  					  break;
  			case 0x15: DT = V[x];			//Delay Timer gets Vx
  					   break;
