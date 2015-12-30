@@ -125,7 +125,7 @@ void CHIP8::mainloop(){
 	time(&prev);
 
 	while(true){
-		print_sys_contents();
+		//print_sys_contents();
 
 		//Break out if PC escapes memory
 		if(PC > MEM_SIZE) break;
