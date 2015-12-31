@@ -32,12 +32,10 @@ uint8_t SPRITE_MAP[80] = {
 
 CHIP8::CHIP8()
 {
-	//Initialize graphics
+	//Assign graphics class
 	CHIPVIDEO = VIDEO();
-	CHIPVIDEO.init();
-	CHIPVIDEO.show();
 
-	//Initialize input
+	//Assign input class
 	CHIPINPUT = INPUT();
 
 	//Initialize internals
@@ -49,29 +47,30 @@ CHIP8::CHIP8()
 
 	//Clear stack, V registers, and memory
 	for(int i = 0; i < MEM_SIZE; i++){
-		if(i < STACK_SIZE)
+		//Stack
+		if(i < STACK_SIZE){
 			STACK[i] = 0;
-		if(i < REG_SIZE)
-			V[i] = 0;
-		MEM[i] = 0;
-	}
+		}
 
-	//Load Hex sprites into memory
-	load_hex_sprites();
+		//Registers
+		if(i < REG_SIZE){
+			V[i] = 0;
+		}
+
+		//Load memory with sprite map if in area
+		if(i < MAP_LENGTH){
+			MEM[i] = SPRITE_MAP[i];
+		}
+		else{
+			MEM[i] = 0;
+		}
+	}
 }
 
-/*
- * load_hex_sprites
- * Description: Reads data from Sprite Map and stores into memory.
- * Inputs: None
- * Outputs: None
- * Return Value: None
-*/
-
-void CHIP8::load_hex_sprites(){
-	for(int i = 0; i < MAP_LENGTH; i++){
-		MEM[i] = SPRITE_MAP[i];
-	}
+bool CHIP8::init_video(){
+	bool success = CHIPVIDEO.init();
+	CHIPVIDEO.show();
+	return success;
 }
 
 /*
@@ -96,19 +95,36 @@ CHIP8::~CHIP8(){
  * Return Value: None
 */
 
-void CHIP8::load_program(const char* program_name){
+bool CHIP8::load_program(const char* program_name){
 	//Temporary data array, clear contents so we don't load garbage
 	uint8_t program_data[MAX_PROG_SIZE];
 	for(int i = 0; i<MAX_PROG_SIZE; i++) program_data[i] = 0x00;
 
-	//Read the file into the data array
+	//Open chip 8 game
 	FILE* program_file = fopen(program_name, "r+");
-	fread(program_data, sizeof(uint8_t), MAX_PROG_SIZE, program_file);
+	if(program_file == NULL){
+		std::cout << "Unable to open file.\n" << std::endl;
+		return false;
+	}
+
+	// Obtain the file size
+	fseek(program_file, 0, SEEK_END);
+	size_t f_size = ftell(program_file);
+	rewind(program_file);
+
+
+	size_t result = fread(program_data, sizeof(uint8_t), MAX_PROG_SIZE, program_file);	
+	if(result != f_size){
+		std::cout << "Error reading file.\n" << std::endl;
+		return false;
+	}
+
 	fclose(program_file);
 
 	//Copy from the data array into memory, this can be skipped by having fread read directly into the correct starting address of memory
 	//**********************************************************************************************************************************
 	for(int i = 0; i<MAX_PROG_SIZE; i++) MEM[PC_START + i] = program_data[i];
+	return true;
 }
 
 /*
@@ -125,10 +141,10 @@ void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
 	uint32_t start;
-	uint32_t FPS = 60;
+	uint32_t FPS = 30;
+	bool draw;
 
 	while(true){
-		print_sys_contents();
 		start = SDL_GetTicks();
 
 		//Break out if PC escapes memory
@@ -143,13 +159,13 @@ void CHIP8::mainloop(){
 		PC += 2;
 
 		//Execute opcode
-		exec_op(opcode);
+		draw = exec_op(opcode);
 
 		CHIPINPUT.poll_keyboard();
 
 		//Check if we should update Sound Timer, Delay Timer, and video frame
 		//printf("%d\n", (SDL_GetTicks() - start));
-		if(1000/FPS > SDL_GetTicks() - start){
+		if(1000/FPS > SDL_GetTicks() - start && draw){
 			SDL_Delay(1000/FPS - (SDL_GetTicks() - start));
 		}
 		show_video();
@@ -214,7 +230,7 @@ void CHIP8::show_video(){
  * Return Value: None
 */
 
-void CHIP8::exec_op(uint16_t opcode){
+bool CHIP8::exec_op(uint16_t opcode){
 	//Extract all argument information from the opcode
 	uint8_t x = (uint8_t)((opcode >> 8) & 0x0F);
 	uint8_t y = (uint8_t)((opcode >> 4) & 0x0F);
@@ -268,7 +284,10 @@ void CHIP8::exec_op(uint16_t opcode){
  	if((opcode >> 12) == 0xA) I = (opcode & 0xFFF);						//LoaD I, I gets lower 12 bits of opcode
  	if((opcode >> 12) == 0xB) PC = V[0] + (opcode & 0xFFF);				//JMP, PC gets V0 + lower 12 bits of opcode
  	if((opcode >> 12) == 0xC) V[x] = (rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
- 	if((opcode >> 12) == 0xD) draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
+ 	if((opcode >> 12) == 0xD){
+ 		draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
+ 		return true;
+ 	}
  	if((opcode >> 12) == 0xE){				//2 Opcodes begin with Hex E
  		if((opcode & 0xFF) == 0x9E){
  			if(CHIPINPUT.get_key_status(V[x]) == true){
@@ -306,6 +325,7 @@ void CHIP8::exec_op(uint16_t opcode){
  					   break;
  		}
  	}
+ 	return false;
 }
 
 /* Debugging functions */

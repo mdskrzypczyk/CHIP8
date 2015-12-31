@@ -26,23 +26,23 @@ class CHIP8
         //Main destructor for CHIP8
         ~CHIP8();
 
-        //Loads hex sprite map into interpreter area of memory (0x000 - 0x1FF)
-        void load_hex_sprites();
-
-        //Helper function for Dxyn opcode, draws a sprite to the screen
-        void draw_sprite(uint8_t x, uint8_t y, uint8_t nibble);
+        //Video Initialization
+        bool init_video();
 
         //Function for loading a program file into the interpretter's memory
-        void load_program(const char* program_name);
+        bool load_program(const char* program_name);
 
         //Main emulating loop for CHIP8
         void mainloop();
 
+        //Function for decoding and executing opcodes
+        bool exec_op(unsigned short opcode);
+
+        //Helper function for Dxyn opcode, draws a sprite to the screen
+        void draw_sprite(uint8_t x, uint8_t y, uint8_t nibble);
+
         //Function for showing 
         void show_video();
-
-        //Function for decoding and executing opcodes
-        void exec_op(unsigned short opcode);
 
         //Debugging Functions
         void print_mem_contents();
