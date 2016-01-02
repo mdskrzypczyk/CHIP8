@@ -4,6 +4,8 @@
 #define GRAPHICS_H
 #define WINDOW_WIDTH 640	//Window Dimensions
 #define WINDOW_HEIGHT 480
+#define SCREEN_WIDTH 64
+#define SCREEN_HEIGHT 32
 #define BLACK 0				//Constants for Black and White to be used
 #define WHITE 16777215		//for 32-bit pixel color info in SDL window.
  	
@@ -44,6 +46,8 @@ class VIDEO{
 		SDL_Surface* gSurface;		//Main surface we draw to
 		SDL_Surface* gBackground;	//Background
 		uint32_t* vid_mem;			//Pointer to beginning of video memory for SDL
+		uint32_t background_color;
+		uint32_t foreground_color;
 };
 
 #endif

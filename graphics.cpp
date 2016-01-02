@@ -10,8 +10,10 @@
 */
 
 VIDEO::VIDEO(){
-	pixel_width = WINDOW_WIDTH / 64;
-	pixel_height = WINDOW_HEIGHT / 32;
+	pixel_width = WINDOW_WIDTH / SCREEN_WIDTH;
+	pixel_height = WINDOW_HEIGHT / SCREEN_HEIGHT;
+	background_color = BLACK;
+	foreground_color = WHITE;
 }
 
 /*
@@ -101,12 +103,12 @@ void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
 bool VIDEO::xor_color(uint8_t x, uint8_t y){
 	uint32_t pix_color = *(vid_mem + y*pixel_height*WINDOW_WIDTH + x*pixel_width);
 
-	if(pix_color == BLACK){
-		draw_pixel(x, y, WHITE);
+	if(pix_color == background_color){
+		draw_pixel(x, y, foreground_color);
 		return false;
 	}
 	else{
-		draw_pixel(x, y, BLACK);
+		draw_pixel(x, y, background_color);
 		return true;
 	}
 }
@@ -136,7 +138,7 @@ void VIDEO::show(){
 void VIDEO::clear(){
 	for(int y = 0; y < WINDOW_HEIGHT; y++){
 		for(int x = 0; x < WINDOW_WIDTH; x++){
-			*(vid_mem + y*WINDOW_WIDTH + x) = BLACK;
+			*(vid_mem + y*WINDOW_WIDTH + x) = background_color;
 		}
 	}
 }

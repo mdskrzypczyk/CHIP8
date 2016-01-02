@@ -51,7 +51,7 @@ class CHIP8
 
     private:
         VIDEO CHIPVIDEO;        //Graphics/Video object for handling sprites and display
-        INPUT CHIPINPUT;
+        INPUT CHIPINPUT;        //Input object for handling hex keyboard info
         uint16_t PC;            //16-bit Program Counter
         uint8_t SP;             //8-bit Stack pointer
         uint16_t STACK[STACK_SIZE]; //Stack

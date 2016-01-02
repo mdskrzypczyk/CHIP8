@@ -161,14 +161,15 @@ void CHIP8::mainloop(){
 		//Execute opcode
 		draw = exec_op(opcode);
 
+		//Update the keyboard state
 		CHIPINPUT.poll_keyboard();
 
 		//Check if we should update Sound Timer, Delay Timer, and video frame
-		//printf("%d\n", (SDL_GetTicks() - start));
 		if(1000/FPS > SDL_GetTicks() - start && draw){
 			SDL_Delay(1000/FPS - (SDL_GetTicks() - start));
+			show_video();
 		}
-		show_video();
+		
 		if(ST != 0) ST--;
 		if(DT != 0) DT--;
 	}

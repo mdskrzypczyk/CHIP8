@@ -1,12 +1,38 @@
 #include "input.h"
 
+/*
+ * INPUT
+ * Description: Constructor for CHIPINPUT object, initializes all keys to 
+ *				unpressed state.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
 INPUT::INPUT(){
 	for(int i = 0; i < NUM_KEYS; i++){
 		key_status[i] = false;
 	}
 }
 
+/*
+ * ~INPUT
+ * Description: Empty destructor for CHIPINPUT
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
 INPUT::~INPUT(){}
+
+/*
+ * poll_keyboard
+ * Description: Updates the key status array with up/down presses on a key
+ * Inputs: None
+ * Outputs: None
+ * Return Value: The hexadecimal value of the key that was pressed, otherwise -1
+ *				 if no keys were pressed
+*/
 
 uint8_t INPUT::poll_keyboard(){
 	SDL_Event event;
@@ -90,10 +116,19 @@ uint8_t INPUT::poll_keyboard(){
 	return 0xFF;
 }
 
+/*
+ * get_key_status
+ * Description: Pulls key status information from status array
+ * Inputs: None
+ * Outputs: None
+ * Return Value: Boolean representings if key is pressed (true) or not (false)
+*/
+
 bool INPUT::get_key_status(uint8_t key){
 	return key_status[key];
 }
 
+//Debugging
 void INPUT::print_keyboard_status(){
 	for(int i = 0; i < NUM_KEYS; i++){
 		if(key_status[i]) printf("%d: %d\n", i, key_status[i]);
