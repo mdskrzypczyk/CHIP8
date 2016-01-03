@@ -12,13 +12,21 @@ The program can be compiled using the compile.sh shell script.  Once the program
 The hexadecimal keyboard has been mapped as follows:
 
 +---+---+---+---+		    +---+---+---+---+
+
 | 0 | 1 | 2 | 3 |           | 1 | 2 | 3 | 4 |
+
 +---+---+---+---+           +---+---+---+---+
+
 | 4 | 5 | 6 | 7 |           | Q | W | E | R |
+
 +---+---+---+---+    =>     +---+---+---+---+
+
 | 8 | 9 | A | B |           | A | S | D | F |
+
 +---+---+---+---+           +---+---+---+---+
+
 | C | D | E | F |           | Z | X | C | V |
+
 +---+---+---+---+           +---+---+---+---+
 
 ##Update/Changelog
