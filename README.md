@@ -32,6 +32,7 @@ F: V
 -Adjustable window dimensions
 -Add color cycling for different color schemes
 -Add changing of game without restarting program
+-Add sound support
 
 ##Update/Changelog
 V1.1: Fixed screen flickering issues, improved FPS, fixed exiting by x-ing out of window.  Added Makefile for compilation.
