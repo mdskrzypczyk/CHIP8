@@ -9,24 +9,30 @@ This program requires SDL2 for compilation.
 The program can be compiled using the compile.sh shell script.  Once the program has been built it can be run with: ./chip8 <program>
 
 ##Controls
-The hexadecimal keyboard has been mapped as follows:
+Currently the Chip-8's hexadecimal keyboard has been mapped in the following manner:
+0: 1
+1: 2
+2: 3
+3: 4
+4: Q
+5: W
+6: E
+7: R
+8: A
+9: S
+A: D
+B: F
+C: Z
+D: X
+E: C
+F: V
 
-+---+---+---+---+		    +---+---+---+---+
-| 0 | 1 | 2 | 3 |           | 1 | 2 | 3 | 4 |
-
-+---+---+---+---+           +---+---+---+---+
-
-| 4 | 5 | 6 | 7 |           | Q | W | E | R |
-
-+---+---+---+---+    =>     +---+---+---+---+
-
-| 8 | 9 | A | B |           | A | S | D | F |
-
-+---+---+---+---+           +---+---+---+---+
-
-| C | D | E | F |           | Z | X | C | V |
-
-+---+---+---+---+           +---+---+---+---+
+##Future Changes
+-Allow modification of keyboard mapping
+-Adjustable window dimensions
+-Add color cycling for different color schemes
+-Add changing of game without restarting program
 
 ##Update/Changelog
-V1.0: Function Interpretter
+V1.1: Fixed screen flickering issues, improved FPS, fixed exiting by x-ing out of window.  Added Makefile for compilation.
+V1.0: Functioning Interpretter

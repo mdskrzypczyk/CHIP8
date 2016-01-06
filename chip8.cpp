@@ -141,7 +141,7 @@ void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
 	uint32_t start;
-	uint32_t FPS = 20;
+	uint32_t FPS = 14;
 	bool draw;
 	bool quit = false;
 	int instructions = 0;
