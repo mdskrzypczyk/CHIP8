@@ -29,11 +29,16 @@ F: V
 
 ##Future Changes
 -Allow modification of keyboard mapping
+
 -Adjustable window dimensions
+
 -Add changing of game without restarting program
+
 -Add sound support
 
 ##Update/Changelog
 V1.2: Added random color scheming via pressint "T"
+
 V1.1: Fixed screen flickering issues, improved FPS, fixed exiting by x-ing out of window.  Added Makefile for compilation.
+
 V1.0: Functioning Interpretter
