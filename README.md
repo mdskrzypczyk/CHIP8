@@ -6,7 +6,7 @@ This is a github repository containing code written for a Chip-8 Interpretter.  
 This program requires SDL2 for compilation.
 
 ##Usage
-The program can be compiled using the compile.sh shell script.  Once the program has been built it can be run with: ./chip8 <program>
+The program can be compiled using the provided Makefile.  Once the program has been built it can be run with: ./chip8 <program>
 
 ##Controls
 Currently the Chip-8's hexadecimal keyboard has been mapped in the following manner:
