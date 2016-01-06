@@ -39,7 +39,7 @@ class CHIP8
         bool exec_op(unsigned short opcode);
 
         //Helper function for Dxyn opcode, draws a sprite to the screen
-        void draw_sprite(uint8_t x, uint8_t y, uint8_t nibble);
+        bool draw_sprite(uint8_t x, uint8_t y, uint8_t nibble);
 
         //Function for showing 
         void show_video();

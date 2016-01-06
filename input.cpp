@@ -111,6 +111,9 @@ uint8_t INPUT::poll_keyboard(){
 				default: break;
 			}
 		}
+		else if(event.type == SDL_QUIT){
+			return 16;
+		}
 	}
 
 	return 0xFF;

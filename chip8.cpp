@@ -141,10 +141,12 @@ void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
 	uint32_t start;
-	uint32_t FPS = 30;
+	uint32_t FPS = 20;
 	bool draw;
+	bool quit = false;
+	int instructions = 0;
 
-	while(true){
+	while(!quit){
 		start = SDL_GetTicks();
 
 		//Break out if PC escapes memory
@@ -161,12 +163,16 @@ void CHIP8::mainloop(){
 		//Execute opcode
 		draw = exec_op(opcode);
 
-		//Update the keyboard state
-		CHIPINPUT.poll_keyboard();
+		//Increment number of instructions executed since previous draw
+		instructions++;
+
+		//Update the keyboard state, quit the program if user clicks on x
+		if(CHIPINPUT.poll_keyboard() == 16) quit = true;
 
 		//Check if we should update Sound Timer, Delay Timer, and video frame
-		if(1000/FPS > SDL_GetTicks() - start && draw){
+		if(1000/FPS > SDL_GetTicks() - start && draw && (instructions > 20)){
 			SDL_Delay(1000/FPS - (SDL_GetTicks() - start));
+			instructions = 0;
 			show_video();
 		}
 		
@@ -185,7 +191,7 @@ void CHIP8::mainloop(){
  * Return Value: None
 */
 
-void CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble){
+bool CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble){
 	//Set VF to 0
 	V[0xF] = 0;
 	
@@ -209,6 +215,9 @@ void CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble){
 			}
 		}
 	}
+
+	if(V[0xF]) return false;
+	else return true;
 }
 
 /*
@@ -286,8 +295,8 @@ bool CHIP8::exec_op(uint16_t opcode){
  	if((opcode >> 12) == 0xB) PC = V[0] + (opcode & 0xFFF);				//JMP, PC gets V0 + lower 12 bits of opcode
  	if((opcode >> 12) == 0xC) V[x] = (rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
  	if((opcode >> 12) == 0xD){
- 		draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
- 		return true;
+ 		return draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
+ 
  	}
  	if((opcode >> 12) == 0xE){				//2 Opcodes begin with Hex E
  		if((opcode & 0xFF) == 0x9E){
