@@ -12,6 +12,8 @@
 VIDEO::VIDEO(){
 	pixel_width = WINDOW_WIDTH / SCREEN_WIDTH;
 	pixel_height = WINDOW_HEIGHT / SCREEN_HEIGHT;
+	gWidth = WINDOW_WIDTH;
+	gHeight = WINDOW_HEIGHT;
 	background_color = BLACK;
 	foreground_color = WHITE;
 }
@@ -51,7 +53,7 @@ bool VIDEO::init(){
 	else
 	{
 		//Create window
-		gWindow = SDL_CreateWindow( "CHIP-8 Interpretter", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN );
+		gWindow = SDL_CreateWindow( "CHIP-8 Interpretter", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 		if( gWindow == NULL )
 		{
 			printf( "Window could not be created! SDL_Error: %s\n", SDL_GetError() );
@@ -67,6 +69,52 @@ bool VIDEO::init(){
 	vid_mem = (uint32_t *)gSurface->pixels;
 	clear();
 	return success;
+}
+
+/*
+ * handle_event
+ * Description: Function for handling SDL Window events.
+ * Inputs: event - The SDL_Event that occurred
+ * Outputs: None
+ * Return Value: None
+*/
+//STILL IN PROGRESS
+void VIDEO::handle_event(SDL_Event event){
+	if(event.type == SDL_WINDOWEVENT){
+		switch(event.window.event){
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+				gWidth = event.window.data1;
+				gHeight = event.window.data2;
+				pixel_width = gWidth / SCREEN_WIDTH;
+				pixel_height = gHeight / SCREEN_HEIGHT;
+				break;
+		}
+	}
+}
+
+/*
+ * rand_color_scheme
+ * Description: Function for randomizing the color scheme of the Chip-8.  Repaints the screen.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
+void VIDEO::rand_color_scheme(){
+	srand(time(NULL));
+
+	uint32_t newforeground_color = rand() % 4294967296;
+	uint32_t newbackground_color = rand() % 4294967296;
+	uint32_t* pixel;
+	for(int i = 0; i < gWidth*gHeight; i++){
+		pixel = (vid_mem + i);
+		if(*pixel == foreground_color) *pixel = newforeground_color;
+		else *pixel = newbackground_color; 
+	}
+
+	foreground_color = newforeground_color;
+	background_color = newbackground_color;
+	show();
 }
 
 /*

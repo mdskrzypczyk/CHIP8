@@ -145,6 +145,8 @@ void CHIP8::mainloop(){
 	bool draw;
 	bool quit = false;
 	int instructions = 0;
+	SDL_Event event;
+	uint8_t key_return;
 
 	while(!quit){
 		start = SDL_GetTicks();
@@ -152,22 +154,33 @@ void CHIP8::mainloop(){
 		//Break out if PC escapes memory
 		if(PC > MEM_SIZE) break;
 
-		//Grab Opcode
+		//Grab Opcode (Fetch)
 		opcode = MEM[PC];
 		opcode <<= 8;
 		opcode |= MEM[PC+1];
 
-		//Increment Program Counter
+		//Increment Program Counter (Fetch)
 		PC += 2;
 
-		//Execute opcode
+		//Execute opcode (Decode and Execute)
 		draw = exec_op(opcode);
 
 		//Increment number of instructions executed since previous draw
 		instructions++;
 
-		//Update the keyboard state, quit the program if user clicks on x
-		if(CHIPINPUT.poll_keyboard() == 16) quit = true;
+		//Check for keyboard and window updates
+		while(SDL_PollEvent(&event)){
+			key_return = CHIPINPUT.poll_keyboard(event);		//Update key status
+			
+			quit = (key_return == 16);							//Quit if 'x' clicked
+			
+			//Change the color scheme if user wishes
+			if(key_return == 17){
+				CHIPVIDEO.rand_color_scheme();
+			}
+		}
+
+
 
 		//Check if we should update Sound Timer, Delay Timer, and video frame
 		if(1000/FPS > SDL_GetTicks() - start && draw && (instructions > 20)){
@@ -246,6 +259,7 @@ bool CHIP8::exec_op(uint16_t opcode){
 	uint8_t y = (uint8_t)((opcode >> 4) & 0x0F);
 	uint8_t kk = (uint8_t)(opcode & 0xFF);
 	uint8_t nibble = (uint8_t)(opcode & 0x0F);
+	SDL_Event event;
 
 	//Seed random generator
 	srand(time(NULL));
@@ -314,9 +328,9 @@ bool CHIP8::exec_op(uint16_t opcode){
  		switch(opcode & 0xFF){
  			case 0x7: V[x] = DT;			//Vx gets Delay Timer value
  					  break;
- 			case 0xA: V[x] = CHIPINPUT.poll_keyboard();
+ 			case 0xA: while(SDL_PollEvent(&event)){V[x] = CHIPINPUT.poll_keyboard(event);}
  					  while(V[x] == 0xFF){
- 					  	V[x] = CHIPINPUT.poll_keyboard();
+ 					  	while(SDL_PollEvent(&event)){V[x] = CHIPINPUT.poll_keyboard(event);}
  					  };
  					  break;
  			case 0x15: DT = V[x];			//Delay Timer gets Vx

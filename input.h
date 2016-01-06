@@ -12,7 +12,7 @@ class INPUT{
 		~INPUT();
 
 		//Function for updating key_status boolean array, checks the keyboard for pressed/unpressed keys
-		uint8_t poll_keyboard();
+		uint8_t poll_keyboard(SDL_Event event);
 
 		//Function that returns pressed state of a given key
 		bool get_key_status(uint8_t key);

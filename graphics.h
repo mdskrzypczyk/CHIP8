@@ -1,5 +1,7 @@
 #include <SDL2/SDL.h>
 #include <stdio.h>
+#include <time.h>
+
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 #define WINDOW_WIDTH 640	//Window Dimensions
@@ -19,6 +21,12 @@ class VIDEO{
 
 		//Function to initialize SDL components
 		bool init();
+
+		//Function for handling SDL window events
+		void handle_event(SDL_Event event);
+
+		//Function for chaning the Chip-8 color scheme
+		void rand_color_scheme();
 
 		//Debugging function
 		uint32_t get_color(uint8_t r, uint8_t g, uint8_t b);
@@ -43,6 +51,8 @@ class VIDEO{
 
 	private:
 		SDL_Window* gWindow;		//Pointer to SDL window object
+		int gWidth;
+		int gHeight;
 		SDL_Surface* gSurface;		//Main surface we draw to
 		SDL_Surface* gBackground;	//Background
 		uint32_t* vid_mem;			//Pointer to beginning of video memory for SDL
