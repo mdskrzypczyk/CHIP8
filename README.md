@@ -11,20 +11,35 @@ The program can be compiled using the provided Makefile.  Once the program has b
 ##Controls
 Currently the Chip-8's hexadecimal keyboard has been mapped in the following manner:
 0: 1
+
 1: 2
+
 2: 3
+
 3: 4
+
 4: Q
+
 5: W
+
 6: E
+
 7: R
+
 8: A
+
 9: S
+
 A: D
+
 B: F
+
 C: Z
+
 D: X
+
 E: C
+
 F: V
 
 ##Future Changes
@@ -41,4 +56,4 @@ V1.2: Added random color scheming via pressint "T"
 
 V1.1: Fixed screen flickering issues, improved FPS, fixed exiting by x-ing out of window.  Added Makefile for compilation.
 
-V1.0: Functioning Interpretter
+rV1.0: Functioning Interpretter
