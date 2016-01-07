@@ -33,6 +33,12 @@ class CHIP8
         //Function for loading a program file into the interpretter's memory
         bool load_program(const char* program_name);
 
+        //Function for loading save state information
+        bool load_state(const char* state_name);
+
+        //Function for saving Chip-8 state information
+        bool save_state(const char* state_name);
+
         //Main emulating loop for CHIP8
         void mainloop();
 
