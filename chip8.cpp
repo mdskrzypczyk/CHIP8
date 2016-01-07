@@ -176,7 +176,7 @@ bool CHIP8::load_state(const char* state_name){
 
 	//4.  Restore Memory
 	for(int i = 7 + REG_SIZE + 2*STACK_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE + MEM_SIZE; i++){
-		MEMORY[i - (7 + REG_SIZE + 2*STACK_SIZE)] = state_data[i];
+		MEM[i - (7 + REG_SIZE + 2*STACK_SIZE)] = state_data[i];
 	}
 
 	return true;
@@ -216,7 +216,7 @@ bool CHIP8::save_state(const char* state_name){
 
 	//Save Memory
 	for(int i = 7 + REG_SIZE + 2*STACK_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE + MEM_SIZE; i++){
-		state_data[i] = MEMORY[i - (7 + REG_SIZE + 2*STACK_SIZE)];
+		state_data[i] = MEM[i - (7 + REG_SIZE + 2*STACK_SIZE)];
 	}
 
 	//Write state information to file
@@ -283,7 +283,7 @@ void CHIP8::mainloop(){
 		//Check for keyboard and window updates
 		while(SDL_PollEvent(&event)){
 			key_return = CHIPINPUT.poll_keyboard(event);		//Update key status
-			
+			CHIPVIDEO.handle_event(event);						//Update window
 			quit = (key_return == 16);							//Quit if 'x' clicked
 			
 			//Change the color scheme if user wishes

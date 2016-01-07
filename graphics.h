@@ -25,6 +25,10 @@ class VIDEO{
 		//Function for handling SDL window events
 		void handle_event(SDL_Event event);
 
+		void switch_surface();
+
+		void draw_pix_map();
+
 		//Function for chaning the Chip-8 color scheme
 		void rand_color_scheme();
 
@@ -56,6 +60,7 @@ class VIDEO{
 		SDL_Surface* gSurface;		//Main surface we draw to
 		SDL_Surface* gBackground;	//Background
 		uint32_t* vid_mem;			//Pointer to beginning of video memory for SDL
+		uint32_t pix_map[SCREEN_HEIGHT][SCREEN_WIDTH];
 		uint32_t background_color;
 		uint32_t foreground_color;
 };

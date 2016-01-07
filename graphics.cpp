@@ -61,8 +61,10 @@ bool VIDEO::init(){
 		}
 		else
 		{
+			SDL_SetWindowMinimumSize(gWindow, SCREEN_WIDTH*4, SCREEN_HEIGHT*4);
 			//Get window surface
 			gSurface = SDL_GetWindowSurface( gWindow );
+
 		}
 	}
 
@@ -78,16 +80,56 @@ bool VIDEO::init(){
  * Outputs: None
  * Return Value: None
 */
-//STILL IN PROGRESS
+
 void VIDEO::handle_event(SDL_Event event){
 	if(event.type == SDL_WINDOWEVENT){
 		switch(event.window.event){
-			case SDL_WINDOWEVENT_SIZE_CHANGED:
+			//Check for window resize
+			case SDL_WINDOWEVENT_RESIZED:
+				//Update window dimensions
 				gWidth = event.window.data1;
 				gHeight = event.window.data2;
+
+				//Update pixel dimensions to fit new window
 				pixel_width = gWidth / SCREEN_WIDTH;
 				pixel_height = gHeight / SCREEN_HEIGHT;
+
+				//Update the surface for the modified window
+				switch_surface();
 				break;
+		}
+	}
+}
+
+/*
+ * switch_surface
+ * Description: Function for acquiring window surface and redrawing
+ *				the pixel map for resizing.
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
+void VIDEO::switch_surface(){
+	gSurface = SDL_GetWindowSurface(gWindow);
+	if(gSurface != NULL){
+		vid_mem = (uint32_t*)gSurface->pixels;
+		draw_pix_map();		
+	}
+}
+
+/*
+ * draw_pix_map
+ * Description: Function for redrawing the surface using pixel map
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
+
+void VIDEO::draw_pix_map(){
+	for(int y = 0; y < SCREEN_HEIGHT; y++){
+		for(int x = 0; x < SCREEN_WIDTH; x++){
+			draw_pixel(x, y, pix_map[y][x]);
 		}
 	}
 }
@@ -129,12 +171,11 @@ void VIDEO::rand_color_scheme(){
 */
 
 void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
-	uint32_t* pixmem = vid_mem + x*pixel_width + y*pixel_height*WINDOW_WIDTH; //May be an issue with flexible window dimensions
+	uint32_t* pixmem = vid_mem + x*pixel_width + y*pixel_height*gWidth;
 
-	for(int screen_y = 0; screen_y < (uint8_t)pixel_height; screen_y++){
-		for(int screen_x = 0; screen_x < (uint8_t)pixel_width; screen_x++){
-			//May be an issue with flexible window dimensions
-			*(pixmem + screen_x + screen_y*WINDOW_WIDTH) = rgb;
+	for(int screen_y = 0; screen_y < (int)pixel_height; screen_y++){
+		for(int screen_x = 0; screen_x < (int)pixel_width; screen_x++){
+			*(pixmem + screen_x + screen_y*gWidth) = rgb;
 		}
 	}
 }
@@ -149,14 +190,16 @@ void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
 */
 
 bool VIDEO::xor_color(uint8_t x, uint8_t y){
-	uint32_t pix_color = *(vid_mem + y*pixel_height*WINDOW_WIDTH + x*pixel_width);
-
+	//uint32_t pix_color = *(vid_mem + y*pixel_height*WINDOW_WIDTH + x*pixel_width);
+	uint32_t pix_color = pix_map[y][x];
 	if(pix_color == background_color){
 		draw_pixel(x, y, foreground_color);
+		pix_map[y][x] = foreground_color;
 		return false;
 	}
 	else{
 		draw_pixel(x, y, background_color);
+		pix_map[y][x] = background_color;
 		return true;
 	}
 }
@@ -187,6 +230,11 @@ void VIDEO::clear(){
 	for(int y = 0; y < WINDOW_HEIGHT; y++){
 		for(int x = 0; x < WINDOW_WIDTH; x++){
 			*(vid_mem + y*WINDOW_WIDTH + x) = background_color;
+		}
+	}
+	for(int y = 0; y < SCREEN_HEIGHT; y++){
+		for(int x = 0; x < SCREEN_WIDTH; x++){
+			pix_map[y][x] = background_color;
 		}
 	}
 }
