@@ -16,6 +16,7 @@
 #define MAX_PROG_SIZE 0xA00 //Maximum allowable size of program
 #define ETI_START 0x600     //Start of ETI area in memory
 #define MAP_LENGTH 5*16     //Size of Sprite Map
+#define STATE_SIZE 4151     //Size of entire Chip-8 state
 
 class CHIP8
 {

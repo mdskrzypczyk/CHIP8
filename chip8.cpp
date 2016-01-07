@@ -92,7 +92,7 @@ CHIP8::~CHIP8(){
  *				at address 0x200.
  * Inputs: program_name - A string containing the file name of the program to load.
  * Outputs: None
- * Return Value: None
+ * Return Value: true/false - Indicates of load was successful
 */
 
 bool CHIP8::load_program(const char* program_name){
@@ -124,6 +124,118 @@ bool CHIP8::load_program(const char* program_name){
 	//Copy from the data array into memory, this can be skipped by having fread read directly into the correct starting address of memory
 	//**********************************************************************************************************************************
 	for(int i = 0; i<MAX_PROG_SIZE; i++) MEM[PC_START + i] = program_data[i];
+	return true;
+}
+
+/*
+ * load_state
+ * Description: Reads binary file Chip-8 state and restores the state of the Chip-8.
+ * Inputs: state_name - A string containing the name of the file to load the state from
+ * Outputs: None
+ * Return Value: true/false - Indicates if restore was successful
+*/
+
+bool CHIP8::load_state(const char* state_name){
+	//Temporary array to hold state info
+	uint8_t state_data[STATE_SIZE];
+
+	//Open the state file
+	FILE* state_file = fopen(state_name, "r");
+	if(state_file == NULL){
+		std::cout << "Unable to load state.\n" << std::endl;
+		return false;
+	}
+
+	//Read state data
+	size_t bytes_read = fread(state_data, sizeof(uint8_t), STATE_SIZE, state_file);
+	if(bytes_read != STATE_SIZE){
+		std::cout << "Error loading state file.\n" << std::endl;
+		return false;
+	}
+
+	//Close state file
+	fclose(state_file);
+
+	//Restore Chip-8 state.
+	//1.  Restore PC, SP, I, ST, and DT
+	PC = ((uint16_t)(state_data[0]) << 8) | state_data[1];
+	SP = state_data[2];
+	I = ((uint16_t)(state_data[3]) << 8) | state_data[4];
+	ST = state_data[5];
+	DT = state_data[6];
+
+	//2.  Restore V registers
+	for(int i = 7; i < 7 + REG_SIZE; i++){
+		V[i-7] = state_data[i];
+	}
+
+	//3.  Restore Stack
+	for(int i = 7 + REG_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE; i+=2){
+		STACK[i - (7 + REG_SIZE)] = ((uint16_t)(state_data[i]) << 8) | state_data[i+1];
+	}
+
+	//4.  Restore Memory
+	for(int i = 7 + REG_SIZE + 2*STACK_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE + MEM_SIZE; i++){
+		MEMORY[i - (7 + REG_SIZE + 2*STACK_SIZE)] = state_data[i];
+	}
+
+	return true;
+}
+
+/*
+ * save_state
+ * Description: Turns internal Chip-8 state into array and writes data to file.
+ * Inputs: state_name - A string containing the name of the file to save state to.
+ * Outputs: None
+ * Return Value: true/false - Indicates if save was successful
+*/
+
+bool CHIP8::save_state(const char* state_name){
+	//Temporary array to hold state info
+	uint8_t state_data[STATE_SIZE];
+
+	//Save PC
+	state_data[0] = (uint8_t)(PC >> 8), state_data[1] = (uint8_t)(PC);
+	//Save SP
+	state_data[2] = SP;
+	//Save I
+	state_data[3] = (uint8_t)(I >> 8), state_data[4] = (uint8_t)(I);
+	//Save ST and DT
+	state_data[5] = ST, state_data[6] = DT;
+
+	//Save V Registers
+	for(int i = 7; i < 7 + REG_SIZE; i++){
+		state_data[i] = V[i-7];
+	}
+
+	//Save Stack
+	for(int i = 7 + REG_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE; i+=2){
+		state_data[i] = (uint8_t)(STACK[i - (7 + REG_SIZE)] >> 8);
+		state_data[i+1] = (uint8_t)(STACK[i - (7 + REG_SIZE)]);
+	}
+
+	//Save Memory
+	for(int i = 7 + REG_SIZE + 2*STACK_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE + MEM_SIZE; i++){
+		state_data[i] = MEMORY[i - (7 + REG_SIZE + 2*STACK_SIZE)];
+	}
+
+	//Write state information to file
+	FILE* state_file = fopen(state_name, "wb");
+	if(state_file == NULL){
+		std::cout << "Unable to open file for writing.\n" << std::endl;
+		return false;
+	}
+
+	//Write state data, check if all data written
+	size_t bytes_written = fwrite(state_data, sizeof(uint8_t), STATE_SIZE, state_file);
+	if(bytes_written != STATE_SIZE){
+		std::cout << "Error writing state to file.\n" << std::endl;
+		return false;
+	}
+
+	//Close the file
+	fclose(state_file);
+
 	return true;
 }
 
