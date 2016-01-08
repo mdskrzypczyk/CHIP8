@@ -52,7 +52,7 @@ F: V
 -Add Loading/Saving of state
 
 ##Update/Changelog
-V1.3: Added ajdustable window dimensions
+V1.3: Added ajdustable window dimensions, pausing on lost focus/minimized window.
 
 V1.2: Added random color scheming via pressing "T"
 

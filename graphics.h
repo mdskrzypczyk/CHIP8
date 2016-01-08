@@ -27,7 +27,10 @@ class VIDEO{
 
 		void switch_surface();
 
+		bool wait_for_focus();
+
 		void draw_pix_map();
+
 
 		//Function for chaning the Chip-8 color scheme
 		void rand_color_scheme();

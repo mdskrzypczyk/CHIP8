@@ -97,6 +97,14 @@ void VIDEO::handle_event(SDL_Event event){
 				//Update the surface for the modified window
 				switch_surface();
 				break;
+
+			case SDL_WINDOWEVENT_FOCUS_LOST:
+				while(!wait_for_focus()){}
+				break;
+			case SDL_WINDOWEVENT_MINIMIZED:
+				while(!wait_for_focus()){}
+				show();
+				break;
 		}
 	}
 }
@@ -116,6 +124,14 @@ void VIDEO::switch_surface(){
 		vid_mem = (uint32_t*)gSurface->pixels;
 		draw_pix_map();		
 	}
+}
+
+bool VIDEO::wait_for_focus(){
+	SDL_Event event;
+	while(SDL_PollEvent(&event)){
+		return (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED);
+	}
+	return false;
 }
 
 /*
