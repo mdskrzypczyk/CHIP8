@@ -253,7 +253,8 @@ void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
 	uint32_t start;
-	uint32_t FPS = 14;
+	uint32_t timer_start = SDL_GetTicks();
+	uint32_t FPS = 60;
 
 	bool draw;				//Indicates when a draw is required
 	bool quit = false;
@@ -262,6 +263,7 @@ void CHIP8::mainloop(){
 	uint8_t key_return;		//Return value for key processing
 
 	while(!quit){
+		//print_sys_contents();
 		start = SDL_GetTicks();
 
 		//Break out if PC escapes memory
@@ -294,15 +296,23 @@ void CHIP8::mainloop(){
 			}
 		}
 
-		//Check if we should update Sound Timer, Delay Timer, and video frame
-		if(1000/FPS > SDL_GetTicks() - start && draw && (instructions > 20)){
-			SDL_Delay(1000/FPS - (SDL_GetTicks() - start));
-			instructions = 0;
-			show_video();
+		//Decrement the Sound and Delay Timer's at 60Hz
+		if(1000/FPS <= SDL_GetTicks() - timer_start){
+			timer_start = SDL_GetTicks();
+			if(draw) show_video();
+			if(ST != 0) ST--;
+			if(DT != 0) DT--;			
 		}
-		
-		if(ST != 0) ST--;
-		if(DT != 0) DT--;
+
+		//Check if we should update video frame
+		if(1000/FPS > SDL_GetTicks() - start && draw /*&& (instructions > 20)*/){
+			SDL_Delay(1000/FPS - (SDL_GetTicks() - start));
+			timer_start = SDL_GetTicks();
+			instructions = 0;
+			show_video();	
+		}
+
+
 	}
 }
 
@@ -421,7 +431,6 @@ bool CHIP8::exec_op(uint16_t opcode){
 					  break;
 			case 0xE: V[0xF] = ((V[x] & 0x8000) ? 1 : 0), V[x] = (V[x] << 1);	//VF gets MSB of Vx, Vx gets bitshifted to the left by 1
 					  break;
-			default: ;
 		}
  		break;
  		case 0x9: PC = ((V[x] != V[y]) ? PC + 2 : PC);		//Skip Not Equal, skip next instruction if Vx != Vy
@@ -436,12 +445,12 @@ bool CHIP8::exec_op(uint16_t opcode){
  		case 0xE:				//2 Opcodes begin with Hex E
  		if((opcode & 0xFF) == 0x9E){
  			if(CHIPINPUT.get_key_status(V[x]) == true){
- 				PC+=2; //Input related
+ 				PC+=2; 
  			}
  		} 
  		else if((opcode & 0xFF) == 0xA1){
  			if(CHIPINPUT.get_key_status(V[x]) == false){
- 				PC+=2; //Input related
+ 				PC+=2; 
  			}
  		}
  		break;
