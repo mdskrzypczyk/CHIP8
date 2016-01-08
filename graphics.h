@@ -25,12 +25,14 @@ class VIDEO{
 		//Function for handling SDL window events
 		void handle_event(SDL_Event event);
 
+		//Function for updating surface when window resized
 		void switch_surface();
 
+		//Function that stalls Chip-8 when window focus lost
 		bool wait_for_focus();
 
+		//Function for drawing the screen per the pixel map
 		void draw_pix_map();
-
 
 		//Function for chaning the Chip-8 color scheme
 		void rand_color_scheme();
@@ -53,6 +55,7 @@ class VIDEO{
 		//Draws pixels to the SDL window
 		void draw_pixel(uint8_t x, uint8_t y, uint32_t rgb);
 
+		//Pixel dimensions in terms of larger scale window dimensions
 		uint32_t pixel_width;
 		uint32_t pixel_height;
 
@@ -63,9 +66,9 @@ class VIDEO{
 		SDL_Surface* gSurface;		//Main surface we draw to
 		SDL_Surface* gBackground;	//Background
 		uint32_t* vid_mem;			//Pointer to beginning of video memory for SDL
-		uint32_t pix_map[SCREEN_HEIGHT][SCREEN_WIDTH];
-		uint32_t background_color;
-		uint32_t foreground_color;
+		uint32_t pix_map[SCREEN_HEIGHT][SCREEN_WIDTH];		//Pixel map containing pixel representation of Chip-8 screen
+		uint32_t background_color;	//Background color for surface
+		uint32_t foreground_color;	//Foreground color for surface
 };
 
 #endif

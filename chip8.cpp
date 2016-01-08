@@ -254,11 +254,12 @@ void CHIP8::mainloop(){
 	unsigned short opcode;
 	uint32_t start;
 	uint32_t FPS = 14;
-	bool draw;
+
+	bool draw;				//Indicates when a draw is required
 	bool quit = false;
-	int instructions = 0;
-	SDL_Event event;
-	uint8_t key_return;
+	int instructions = 0;	//Number of instructions executed
+	SDL_Event event;		//For processing keyboard/window updates
+	uint8_t key_return;		//Return value for key processing
 
 	while(!quit){
 		start = SDL_GetTicks();
@@ -284,15 +285,14 @@ void CHIP8::mainloop(){
 		while(SDL_PollEvent(&event)){
 			key_return = CHIPINPUT.poll_keyboard(event);		//Update key status
 			CHIPVIDEO.handle_event(event);						//Update window
+
 			quit = (key_return == 16);							//Quit if 'x' clicked
-			
+
 			//Change the color scheme if user wishes
 			if(key_return == 17){
 				CHIPVIDEO.rand_color_scheme();
 			}
 		}
-
-
 
 		//Check if we should update Sound Timer, Delay Timer, and video frame
 		if(1000/FPS > SDL_GetTicks() - start && draw && (instructions > 20)){
@@ -377,7 +377,8 @@ bool CHIP8::exec_op(uint16_t opcode){
 	srand(time(NULL));
 
 	//Decode and execute opcode
-	if((opcode >> 12) == 0x0){
+	switch(opcode >> 12){
+		case 0x0:
 		//Two opcodes have first hex zero
 		switch(opcode){
 			case 0xE0 : CHIPVIDEO.clear();			//CLS - Clear Display
@@ -385,15 +386,22 @@ bool CHIP8::exec_op(uint16_t opcode){
 			case 0xEE : PC = STACK[SP], SP -= 1;	//RET - Restore PC from stack, decrement Stack Pointer
 						break;
 		}
-	}
-	if((opcode >> 12) == 0x1) PC = (0x0FFF & opcode);	//JMP - PC gets value of lower 12 bits
-	if((opcode >> 12) == 0x2) SP += 1, STACK[SP] = PC, PC = (0x0FFF & opcode);	//CALL - Increment Stack Pointer, store PC, PC gets lower 12 bits
-	if((opcode >> 12) == 0x3) PC = ((V[x] == kk) ? PC+2 : PC);		//Skip Equal, skip next instruction if Vx == kk
-	if((opcode >> 12) == 0x4) PC = ((V[x] != kk) ? PC+2 : PC);		//Skip Not Equal, skip next instruction if Vx != kk
-	if((opcode >> 12) == 0x5) PC = ((V[x] == V[y]) ? PC+2 : PC);	//Skip Equal, skip next instruction if Vx == Vy
-	if((opcode >> 12) == 0x6) V[x] = kk;	//LoaD Vx with kk
-	if((opcode >> 12) == 0x7) V[x] += kk;	//ADD kk to Vx
-	if((opcode >> 12) == 0x8){				//Nine opcodes begin with Hex 8
+		break;
+		case 0x1: PC = (0x0FFF & opcode);	//JMP - PC gets value of lower 12 bits
+		break;
+		case 0x2: SP += 1, STACK[SP] = PC, PC = (0x0FFF & opcode);	//CALL - Increment Stack Pointer, store PC, PC gets lower 12 bits
+		break;
+		case 0x3: PC = ((V[x] == kk) ? PC+2 : PC);		//Skip Equal, skip next instruction if Vx == kk
+		break;
+		case 0x4: PC = ((V[x] != kk) ? PC+2 : PC);		//Skip Not Equal, skip next instruction if Vx != kk
+		break;
+		case 0x5: PC = ((V[x] == V[y]) ? PC+2 : PC);	//Skip Equal, skip next instruction if Vx == Vy
+		break;
+		case 0x6: V[x] = kk;	//LoaD Vx with kk
+		break;
+		case 0x7: V[x] += kk;	//ADD kk to Vx
+		break;
+		case 0x8:				//Nine opcodes begin with Hex 8
 		switch(opcode & 0xF){
 			case 0x0: V[x] = V[y];			//LoaD Vx with Vy
 					  break;
@@ -415,28 +423,29 @@ bool CHIP8::exec_op(uint16_t opcode){
 					  break;
 			default: ;
 		}
- 	}
- 	if((opcode >> 12) == 0x9) PC = ((V[x] != V[y]) ? PC + 2 : PC);		//Skip Not Equal, skip next instruction if Vx != Vy
- 	if((opcode >> 12) == 0xA) I = (opcode & 0xFFF);						//LoaD I, I gets lower 12 bits of opcode
- 	if((opcode >> 12) == 0xB) PC = V[0] + (opcode & 0xFFF);				//JMP, PC gets V0 + lower 12 bits of opcode
- 	if((opcode >> 12) == 0xC) V[x] = (rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
- 	if((opcode >> 12) == 0xD){
- 		return draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
- 
- 	}
- 	if((opcode >> 12) == 0xE){				//2 Opcodes begin with Hex E
+ 		break;
+ 		case 0x9: PC = ((V[x] != V[y]) ? PC + 2 : PC);		//Skip Not Equal, skip next instruction if Vx != Vy
+ 		break;
+ 		case 0xA: I = (opcode & 0xFFF);						//LoaD I, I gets lower 12 bits of opcode
+ 		break;
+ 		case 0xB: PC = V[0] + (opcode & 0xFFF);				//JMP, PC gets V0 + lower 12 bits of opcode
+ 		break;
+ 		case 0xC: V[x] = (rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
+ 		break;
+ 		case 0xD: return draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
+ 		case 0xE:				//2 Opcodes begin with Hex E
  		if((opcode & 0xFF) == 0x9E){
  			if(CHIPINPUT.get_key_status(V[x]) == true){
  				PC+=2; //Input related
  			}
  		} 
- 		if((opcode & 0xFF) == 0xA1){
+ 		else if((opcode & 0xFF) == 0xA1){
  			if(CHIPINPUT.get_key_status(V[x]) == false){
  				PC+=2; //Input related
  			}
  		}
- 	}
- 	if((opcode >> 12) == 0xF){				//Nine opcodes begin with Hex F
+ 		break;
+ 		case 0xF:				//Nine opcodes begin with Hex F
  		switch(opcode & 0xFF){
  			case 0x7: V[x] = DT;			//Vx gets Delay Timer value
  					  break;
@@ -460,6 +469,7 @@ bool CHIP8::exec_op(uint16_t opcode){
  			case 0x65: for(int i = 0; i<= x; i++) V[i] = MEM[I + i];	//Load V0 through Vx with values starting at memory I
  					   break;
  		}
+ 		break;
  	}
  	return false;
 }

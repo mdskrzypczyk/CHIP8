@@ -36,6 +36,8 @@ INPUT::~INPUT(){}
 
 uint8_t INPUT::poll_keyboard(SDL_Event event){
 	uint8_t return_val = 0xFF;
+
+	//For handling key presses
 	if(event.type == SDL_KEYDOWN && event.key.repeat == 0){
 		switch(event.key.keysym.sym){
 			case SDLK_1: key_status[0] = true;
@@ -86,11 +88,15 @@ uint8_t INPUT::poll_keyboard(SDL_Event event){
 			case SDLK_v: key_status[15] = true;
 					   return_val = 15;
 					   break;
+
+			//For color cycling
 			case SDLK_t: return_val = 17;
 					   break;
 			default: break;
 		}
 	}
+
+	//Sets the key status to unpressed
 	else if(event.type == SDL_KEYUP && event.key.repeat == 0){
 		switch(event.key.keysym.sym){
 			case SDLK_1: key_status[0] = false;
@@ -128,6 +134,8 @@ uint8_t INPUT::poll_keyboard(SDL_Event event){
 			default: break;
 		}
 	}
+
+	//Handles clicking 'x' for window
 	else if(event.type == SDL_QUIT){
 		return_val = 16;
 	}

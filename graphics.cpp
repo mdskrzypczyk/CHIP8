@@ -10,6 +10,7 @@
 */
 
 VIDEO::VIDEO(){
+	//Set default values
 	pixel_width = WINDOW_WIDTH / SCREEN_WIDTH;
 	pixel_height = WINDOW_HEIGHT / SCREEN_HEIGHT;
 	gWidth = WINDOW_WIDTH;
@@ -119,12 +120,21 @@ void VIDEO::handle_event(SDL_Event event){
 */
 
 void VIDEO::switch_surface(){
-	gSurface = SDL_GetWindowSurface(gWindow);
+	gSurface = SDL_GetWindowSurface(gWindow);	//Grab new window surface
 	if(gSurface != NULL){
-		vid_mem = (uint32_t*)gSurface->pixels;
-		draw_pix_map();		
+		vid_mem = (uint32_t*)gSurface->pixels;	//Get new video memory pointer
+		draw_pix_map();							//Redraw the surface
 	}
 }
+
+/*
+ * wait_for_focus
+ * Description: Function that while-loops while waiting for window to regain
+ *				focus, keeps interpretter from proceeding while user not watching
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
 
 bool VIDEO::wait_for_focus(){
 	SDL_Event event;
@@ -161,8 +171,11 @@ void VIDEO::draw_pix_map(){
 void VIDEO::rand_color_scheme(){
 	srand(time(NULL));
 
+	//Randomly select 32-bit values for color
 	uint32_t newforeground_color = rand() % 4294967296;
 	uint32_t newbackground_color = rand() % 4294967296;
+
+	//Iterate through each pixel and update with new color
 	uint32_t* pixel;
 	for(int i = 0; i < gWidth*gHeight; i++){
 		pixel = (vid_mem + i);
@@ -170,8 +183,11 @@ void VIDEO::rand_color_scheme(){
 		else *pixel = newbackground_color; 
 	}
 
+	//Update the colors
 	foreground_color = newforeground_color;
 	background_color = newbackground_color;
+
+	//Redisplay
 	show();
 }
 
@@ -187,8 +203,10 @@ void VIDEO::rand_color_scheme(){
 */
 
 void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
+	//Get pointer to first pixel of surface
 	uint32_t* pixmem = vid_mem + x*pixel_width + y*pixel_height*gWidth;
 
+	//Iterate through pixels that make up larger Chip-8 pixel and color
 	for(int screen_y = 0; screen_y < (int)pixel_height; screen_y++){
 		for(int screen_x = 0; screen_x < (int)pixel_width; screen_x++){
 			*(pixmem + screen_x + screen_y*gWidth) = rgb;
@@ -202,21 +220,23 @@ void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
  *				at a given CHIP8 (x,y) and XOR's the color.
  * Inputs: None
  * Outputs: None
- * Return Value: None
+ * Return Value: true/false - Indicates whether information on the screen was deleted
 */
 
 bool VIDEO::xor_color(uint8_t x, uint8_t y){
-	//uint32_t pix_color = *(vid_mem + y*pixel_height*WINDOW_WIDTH + x*pixel_width);
+	//Grab the appropriate pixel color from the pixel map
 	uint32_t pix_color = pix_map[y][x];
+
+	//Flip foreground/background color
 	if(pix_color == background_color){
 		draw_pixel(x, y, foreground_color);
 		pix_map[y][x] = foreground_color;
-		return false;
+		return false;						//Information not deleted
 	}
 	else{
 		draw_pixel(x, y, background_color);
 		pix_map[y][x] = background_color;
-		return true;
+		return true;						//Information deleted
 	}
 }
 
@@ -243,11 +263,14 @@ void VIDEO::show(){
 */
 
 void VIDEO::clear(){
+	//Clear the display
 	for(int y = 0; y < WINDOW_HEIGHT; y++){
 		for(int x = 0; x < WINDOW_WIDTH; x++){
 			*(vid_mem + y*WINDOW_WIDTH + x) = background_color;
 		}
 	}
+
+	//Clear the pixel map
 	for(int y = 0; y < SCREEN_HEIGHT; y++){
 		for(int x = 0; x < SCREEN_WIDTH; x++){
 			pix_map[y][x] = background_color;
