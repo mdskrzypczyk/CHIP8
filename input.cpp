@@ -92,6 +92,13 @@ uint8_t INPUT::poll_keyboard(SDL_Event event){
 			//For color cycling
 			case SDLK_t: return_val = 17;
 					   break;
+
+			//For Save State loading/saving
+			case SDLK_p: return_val = 18;
+						break;
+
+			case SDLK_l: return_val = 19;
+						break;
 			default: break;
 		}
 	}

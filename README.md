@@ -49,9 +49,9 @@ F: V
 
 -Add sound support
 
--Add Loading/Saving of state
-
 ##Update/Changelog
+V1.4: Added Save/Load state via pressing "P" and "L" respectively.  Adjusted FPS.
+
 V1.3: Added ajdustable window dimensions, pausing on lost focus/minimized window.
 
 V1.2: Added random color scheming via pressing "T"

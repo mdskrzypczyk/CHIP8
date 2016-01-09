@@ -55,6 +55,8 @@ class VIDEO{
 		//Draws pixels to the SDL window
 		void draw_pixel(uint8_t x, uint8_t y, uint32_t rgb);
 
+		uint32_t* get_pix_map();
+
 		//Pixel dimensions in terms of larger scale window dimensions
 		uint32_t pixel_width;
 		uint32_t pixel_height;

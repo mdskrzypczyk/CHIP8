@@ -32,6 +32,9 @@ uint8_t SPRITE_MAP[80] = {
 
 CHIP8::CHIP8()
 {
+	quit = false;
+	draw = true;
+
 	//Assign graphics class
 	CHIPVIDEO = VIDEO();
 
@@ -165,19 +168,27 @@ bool CHIP8::load_state(const char* state_name){
 	DT = state_data[6];
 
 	//2.  Restore V registers
-	for(int i = 7; i < 7 + REG_SIZE; i++){
-		V[i-7] = state_data[i];
+	for(int i = V_OFFSET; i < STACK_OFFSET; i++){
+		V[i-V_OFFSET] = state_data[i];
 	}
 
 	//3.  Restore Stack
-	for(int i = 7 + REG_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE; i+=2){
-		STACK[i - (7 + REG_SIZE)] = ((uint16_t)(state_data[i]) << 8) | state_data[i+1];
+	for(int i = STACK_OFFSET; i < MEM_OFFSET; i+=2){
+		STACK[i - STACK_OFFSET] = ((uint16_t)(state_data[i]) << 8) | state_data[i+1];
 	}
 
 	//4.  Restore Memory
-	for(int i = 7 + REG_SIZE + 2*STACK_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE + MEM_SIZE; i++){
-		MEM[i - (7 + REG_SIZE + 2*STACK_SIZE)] = state_data[i];
+	for(int i = MEM_OFFSET; i < PIX_OFFSET; i++){
+		MEM[i - MEM_OFFSET] = state_data[i];
 	}
+
+	CHIPVIDEO.clear();
+	uint32_t* pixel_map = CHIPVIDEO.get_pix_map();
+	for(int i = 0; i < 2048; i++){
+		pixel_map[i] = (uint32_t)state_data[4*i+PIX_OFFSET] << 24 | (uint32_t)state_data[4*i+1+PIX_OFFSET] << 16 | (uint32_t)state_data[4*i+2+PIX_OFFSET] << 8 | (uint32_t)state_data[4*i+3+PIX_OFFSET];
+	}
+	CHIPVIDEO.draw_pix_map();
+	show_video();
 
 	return true;
 }
@@ -204,19 +215,28 @@ bool CHIP8::save_state(const char* state_name){
 	state_data[5] = ST, state_data[6] = DT;
 
 	//Save V Registers
-	for(int i = 7; i < 7 + REG_SIZE; i++){
+	for(int i = V_OFFSET; i < STACK_OFFSET; i++){
 		state_data[i] = V[i-7];
 	}
 
 	//Save Stack
-	for(int i = 7 + REG_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE; i+=2){
-		state_data[i] = (uint8_t)(STACK[i - (7 + REG_SIZE)] >> 8);
-		state_data[i+1] = (uint8_t)(STACK[i - (7 + REG_SIZE)]);
+	for(int i = 0; i < STACK_SIZE; i++){
+		state_data[2*i + STACK_OFFSET] = (uint8_t)(STACK[i] >> 8);
+		state_data[2*i + 1 + STACK_OFFSET] = (uint8_t)(STACK[i]);
 	}
 
 	//Save Memory
-	for(int i = 7 + REG_SIZE + 2*STACK_SIZE; i < 7 + REG_SIZE + 2*STACK_SIZE + MEM_SIZE; i++){
-		state_data[i] = MEM[i - (7 + REG_SIZE + 2*STACK_SIZE)];
+	for(int i = MEM_OFFSET; i < PIX_OFFSET; i++){
+		state_data[i] = MEM[i - MEM_OFFSET];
+	}
+
+	uint32_t* pixel_map = CHIPVIDEO.get_pix_map();
+	//Save screen info
+	for(int i = 0; i < 2048; i++){
+		state_data[4*i + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 24); 
+		state_data[4*i + 1 + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 16); 
+		state_data[4*i + 2 + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 8); 
+		state_data[4*i + 3 + PIX_OFFSET] = (uint8_t)(pixel_map[i]); 
 	}
 
 	//Write state information to file
@@ -253,12 +273,6 @@ void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
 	uint32_t timer_start = SDL_GetTicks();
-	uint32_t FPS = 60;
-
-	bool draw;				//Indicates when a draw is required
-	bool quit = false;
-	SDL_Event event;		//For processing keyboard/window updates
-	uint8_t key_return;		//Return value for key processing
 
 	while(!quit){
 		//Break out if PC escapes memory
@@ -270,22 +284,13 @@ void CHIP8::mainloop(){
 		//Execute opcode (Decode and Execute)
 		draw = exec_op(opcode);
 
-		//Check for keyboard and window updates
-		while(SDL_PollEvent(&event)){
-			key_return = CHIPINPUT.poll_keyboard(event);		//Update key status
-			CHIPVIDEO.handle_event(event);						//Update window
-
-			quit = (key_return == 16);							//Quit if 'x' clicked
-
-			//Change the color scheme if user wishes
-			if(key_return == 17){
-				CHIPVIDEO.rand_color_scheme();
-			}
-		}
+		//Check for keyboard and window updates		
+		check_peripherals();
 
 		//Update Sound Timer, Delay Timer, and Video Frame at 60Hz
 		if(1000/FPS <= SDL_GetTicks() - timer_start){
 			timer_start = SDL_GetTicks();
+			show_video();
 			if(ST != 0) ST--;
 			if(DT != 0) DT--;			
 		}
@@ -295,6 +300,29 @@ void CHIP8::mainloop(){
 			SDL_Delay(1000/FPS - (SDL_GetTicks() - timer_start));
 			timer_start = SDL_GetTicks();
 			show_video();	
+		}
+	}
+}
+
+void CHIP8::check_peripherals(){
+	SDL_Event event;		//For processing keyboard/window updates
+
+	//Check for keyboard and window updates
+	while(SDL_PollEvent(&event)){
+		uint8_t key_return = CHIPINPUT.poll_keyboard(event);	//Update key status
+		CHIPVIDEO.handle_event(event);							//Update window
+
+		quit = (key_return == 16);								//Quit if 'x' clicked
+
+		//Change the color scheme if user wishes
+		if(key_return == 17){
+			CHIPVIDEO.rand_color_scheme();
+		}
+		else if(key_return == 18){
+			save_state("chip8.sv");
+		}
+		else if(key_return ==19){
+			load_state("chip8.sv");
 		}
 	}
 }
@@ -444,12 +472,7 @@ bool CHIP8::exec_op(uint16_t opcode){
  			case 0x7: V[x] = DT;			//Vx gets Delay Timer value
  					  break;
  			case 0xA: V[x] = 0xFF;
- 					  while(V[x] == 0xFF){
- 					  	if(SDL_WaitEvent(&event)){
- 					  		V[x] = CHIPINPUT.poll_keyboard(event);		//STRANGE THINGS ARE HAPPENING RIGHT HERE
- 					  	}
- 					  };
- 					  printf("%d\n", V[x]);
+ 					  while(V[x] == 0xFF){if(SDL_WaitEvent(&event)){V[x] = CHIPINPUT.poll_keyboard(event);}};
  					  break;
  			case 0x15: DT = V[x];			//Delay Timer gets Vx
  					   break;
@@ -459,7 +482,7 @@ bool CHIP8::exec_op(uint16_t opcode){
  					   break;
  			case 0x29: I = 5*V[x];			//I gets address of sprite corresponding to value in Vx
  					   break;
- 			case 0x33: MEM[I] = (V[x] % 1000) / 100, MEM[I+1] = (V[x] % 100) / 10, MEM[I+2] = (V[x] % 10);		//Store BCD representation of Vx in I, I+1, I+2
+ 			case 0x33: MEM[I] = V[x] / 100, MEM[I+1] = (V[x] % 100) / 10, MEM[I+2] = (V[x] % 10);		//Store BCD representation of Vx in I, I+1, I+2
  					   break;
  			case 0x55: for(int i = 0; i <= x; i++) MEM[I+i] = V[i];		//Store V0 through Vx starting at memory I
  					   break;

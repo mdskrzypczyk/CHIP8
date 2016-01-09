@@ -161,6 +161,10 @@ void VIDEO::draw_pix_map(){
 	}
 }
 
+uint32_t* VIDEO::get_pix_map(){
+	return pix_map[0];
+}
+
 /*
  * rand_color_scheme
  * Description: Function for randomizing the color scheme of the Chip-8.  Repaints the screen.

@@ -16,7 +16,13 @@
 #define MAX_PROG_SIZE 0xA00 //Maximum allowable size of program
 #define ETI_START 0x600     //Start of ETI area in memory
 #define MAP_LENGTH 5*16     //Size of Sprite Map
-#define STATE_SIZE 4151     //Size of entire Chip-8 state
+#define STATE_SIZE 12343     //Size of entire Chip-8 state
+#define FPS 60
+
+#define V_OFFSET 7
+#define STACK_OFFSET V_OFFSET + REG_SIZE
+#define MEM_OFFSET STACK_OFFSET + 2*STACK_SIZE
+#define PIX_OFFSET MEM_OFFSET + MEM_SIZE
 
 class CHIP8
 {
@@ -42,6 +48,9 @@ class CHIP8
         //Main emulating loop for CHIP8
         void mainloop();
 
+        //Function for checking for graphics and keyboard updates
+        void check_peripherals();
+
         //Function for decoding and executing opcodes
         bool exec_op(unsigned short opcode);
 
@@ -66,6 +75,8 @@ class CHIP8
         uint8_t V[REG_SIZE];        //Register file
         uint16_t I;                 //Index register
         uint8_t DT, ST;             //Delay timer and sound timer
+        bool quit;
+        bool draw;
 };
 
 #endif
