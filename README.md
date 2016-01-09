@@ -42,10 +42,11 @@ E: C
 
 F: V
 
+##Saving and Loading State
+Currently the interpretter can save/load state by pressing "P" and "L".  The interpretter allows for only one state save regardless of the loaded program.
+
 ##Future Changes
 -Allow modification of keyboard mapping
-
--Add changing of game without restarting program
 
 -Add sound support
 

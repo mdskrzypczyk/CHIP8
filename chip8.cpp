@@ -322,9 +322,13 @@ void CHIP8::check_peripherals(){
 		if(key_return == 17){
 			CHIPVIDEO.rand_color_scheme();
 		}
+
+		//Save state
 		else if(key_return == 18){
 			save_state("chip8.sv");
 		}
+
+		//Load state
 		else if(key_return ==19){
 			load_state("chip8.sv");
 		}
@@ -461,12 +465,12 @@ bool CHIP8::exec_op(uint16_t opcode){
  		case 0xD: return draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
  		case 0xE:				//2 Opcodes begin with Hex E
  		if((opcode & 0xFF) == 0x9E){
- 			if(CHIPINPUT.get_key_status(V[x]) == true){
+ 			if(CHIPINPUT.get_key_status(V[x])){
  				PC+=2; 
  			}
  		} 
  		else if((opcode & 0xFF) == 0xA1){
- 			if(CHIPINPUT.get_key_status(V[x]) == false){
+ 			if(!CHIPINPUT.get_key_status(V[x])){
  				PC+=2; 
  			}
  		}

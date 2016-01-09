@@ -229,6 +229,7 @@ void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
 */
 
 bool VIDEO::xor_color(uint8_t x, uint8_t y){
+	//if(x + y*gWidth > SCREEN_HEIGHT*SCREEN_WIDTH || x + y*gWidth < 0) return false;
 	//Grab the appropriate pixel color from the pixel map
 	uint32_t pix_color = pix_map[y][x];
 
