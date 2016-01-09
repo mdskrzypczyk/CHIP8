@@ -97,6 +97,7 @@ void VIDEO::handle_event(SDL_Event event){
 
 				//Update the surface for the modified window
 				switch_surface();
+				show();
 				break;
 
 			case SDL_WINDOWEVENT_FOCUS_LOST:

@@ -252,36 +252,23 @@ bool CHIP8::save_state(const char* state_name){
 void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
-	uint32_t start;
 	uint32_t timer_start = SDL_GetTicks();
 	uint32_t FPS = 60;
 
 	bool draw;				//Indicates when a draw is required
 	bool quit = false;
-	int instructions = 0;	//Number of instructions executed
 	SDL_Event event;		//For processing keyboard/window updates
 	uint8_t key_return;		//Return value for key processing
 
 	while(!quit){
-		//print_sys_contents();
-		start = SDL_GetTicks();
-
 		//Break out if PC escapes memory
 		if(PC > MEM_SIZE) break;
 
 		//Grab Opcode (Fetch)
-		opcode = MEM[PC];
-		opcode <<= 8;
-		opcode |= MEM[PC+1];
-
-		//Increment Program Counter (Fetch)
-		PC += 2;
+		opcode = (uint16_t)MEM[PC] << 8 | MEM[PC+1];
 
 		//Execute opcode (Decode and Execute)
 		draw = exec_op(opcode);
-
-		//Increment number of instructions executed since previous draw
-		instructions++;
 
 		//Check for keyboard and window updates
 		while(SDL_PollEvent(&event)){
@@ -296,23 +283,19 @@ void CHIP8::mainloop(){
 			}
 		}
 
-		//Decrement the Sound and Delay Timer's at 60Hz
+		//Update Sound Timer, Delay Timer, and Video Frame at 60Hz
 		if(1000/FPS <= SDL_GetTicks() - timer_start){
 			timer_start = SDL_GetTicks();
-			if(draw) show_video();
 			if(ST != 0) ST--;
 			if(DT != 0) DT--;			
 		}
 
 		//Check if we should update video frame
-		if(1000/FPS > SDL_GetTicks() - start && draw /*&& (instructions > 20)*/){
-			SDL_Delay(1000/FPS - (SDL_GetTicks() - start));
+		else if((1000/FPS > SDL_GetTicks() - timer_start) && draw){
+			SDL_Delay(1000/FPS - (SDL_GetTicks() - timer_start));
 			timer_start = SDL_GetTicks();
-			instructions = 0;
 			show_video();	
 		}
-
-
 	}
 }
 
@@ -376,6 +359,8 @@ void CHIP8::show_video(){
 */
 
 bool CHIP8::exec_op(uint16_t opcode){
+	//Increment PC
+	PC += 2;
 	//Extract all argument information from the opcode
 	uint8_t x = (uint8_t)((opcode >> 8) & 0x0F);
 	uint8_t y = (uint8_t)((opcode >> 4) & 0x0F);
@@ -458,10 +443,13 @@ bool CHIP8::exec_op(uint16_t opcode){
  		switch(opcode & 0xFF){
  			case 0x7: V[x] = DT;			//Vx gets Delay Timer value
  					  break;
- 			case 0xA: while(SDL_PollEvent(&event)){V[x] = CHIPINPUT.poll_keyboard(event);}
+ 			case 0xA: V[x] = 0xFF;
  					  while(V[x] == 0xFF){
- 					  	while(SDL_PollEvent(&event)){V[x] = CHIPINPUT.poll_keyboard(event);}
+ 					  	if(SDL_WaitEvent(&event)){
+ 					  		V[x] = CHIPINPUT.poll_keyboard(event);		//STRANGE THINGS ARE HAPPENING RIGHT HERE
+ 					  	}
  					  };
+ 					  printf("%d\n", V[x]);
  					  break;
  			case 0x15: DT = V[x];			//Delay Timer gets Vx
  					   break;
@@ -489,7 +477,7 @@ void CHIP8::print_mem_contents(){
 }
 
 void CHIP8::print_sys_contents(){
-	printf("PC: %x  INSTR: %x%x  SP: %x  I: %x  I POINTS AT: %x\n", PC, MEM[PC], MEM[PC+1], SP, I, MEM[I]);
+	printf("PC: %02x  INSTR: %02x%02x  SP: %02x  I: %x  I POINTS AT: %x\n", PC, MEM[PC], MEM[PC+1], SP, I, MEM[I]);
 	for(int i = 0; i < REG_SIZE; i++){
 		printf("V%d: %d,%x  ", i, V[i], V[i]);
 	}
