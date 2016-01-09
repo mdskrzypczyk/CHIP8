@@ -182,11 +182,15 @@ bool CHIP8::load_state(const char* state_name){
 		MEM[i - MEM_OFFSET] = state_data[i];
 	}
 
-	CHIPVIDEO.clear();
-	uint32_t* pixel_map = CHIPVIDEO.get_pix_map();
+	CHIPVIDEO.clear();		//Clear the display
+
+	//5.  Restore the pixel map
+	uint32_t* pixel_map = CHIPVIDEO.get_pix_map();	
 	for(int i = 0; i < 2048; i++){
 		pixel_map[i] = (uint32_t)state_data[4*i+PIX_OFFSET] << 24 | (uint32_t)state_data[4*i+1+PIX_OFFSET] << 16 | (uint32_t)state_data[4*i+2+PIX_OFFSET] << 8 | (uint32_t)state_data[4*i+3+PIX_OFFSET];
 	}
+
+	//Redraw the pixel map
 	CHIPVIDEO.draw_pix_map();
 	show_video();
 
@@ -230,8 +234,8 @@ bool CHIP8::save_state(const char* state_name){
 		state_data[i] = MEM[i - MEM_OFFSET];
 	}
 
-	uint32_t* pixel_map = CHIPVIDEO.get_pix_map();
 	//Save screen info
+	uint32_t* pixel_map = CHIPVIDEO.get_pix_map();
 	for(int i = 0; i < 2048; i++){
 		state_data[4*i + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 24); 
 		state_data[4*i + 1 + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 16); 
@@ -471,9 +475,8 @@ bool CHIP8::exec_op(uint16_t opcode){
  		switch(opcode & 0xFF){
  			case 0x7: V[x] = DT;			//Vx gets Delay Timer value
  					  break;
- 			case 0xA: V[x] = 0xFF;
- 					  while(V[x] == 0xFF){if(SDL_WaitEvent(&event)){V[x] = CHIPINPUT.poll_keyboard(event);}};
- 					  break;
+ 			case 0xA: if(SDL_WaitEvent(&event)){V[x] = CHIPINPUT.poll_keyboard(event);}
+  					  break;
  			case 0x15: DT = V[x];			//Delay Timer gets Vx
  					   break;
  			case 0x18: ST = V[x];			//Sound Timer gets Vx
