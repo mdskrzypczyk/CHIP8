@@ -116,7 +116,7 @@ bool CHIP8::load_program(const char* program_name){
 	rewind(program_file);
 
 
-	size_t result = fread(program_data, sizeof(uint8_t), MAX_PROG_SIZE, program_file);	
+	size_t result = fread(program_data, sizeof(uint8_t), MAX_PROG_SIZE, program_file);
 	if(result != f_size){
 		std::cout << "Error reading file.\n" << std::endl;
 		return false;

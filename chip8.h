@@ -13,7 +13,7 @@
 #define REG_SIZE 16         //16 Registers
 #define STACK_SIZE 16       //16 Stack entries
 #define PC_START 0x200      //Programs start at 0x200
-#define MAX_PROG_SIZE 0xA00 //Maximum allowable size of program
+#define MAX_PROG_SIZE 0xD00 //Maximum allowable size of program
 #define ETI_START 0x600     //Start of ETI area in memory
 #define MAP_LENGTH 5*16     //Size of Sprite Map
 #define STATE_SIZE 12343     //Size of entire Chip-8 state
