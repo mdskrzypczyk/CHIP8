@@ -10,6 +10,7 @@
 #define SCREEN_HEIGHT 32
 #define BLACK 0				//Constants for Black and White to be used
 #define WHITE 16777215		//for 32-bit pixel color info in SDL window.
+#define INTMAX 4294967296
  	
 class VIDEO{
 	public:

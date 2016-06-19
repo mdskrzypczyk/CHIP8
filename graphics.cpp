@@ -103,6 +103,7 @@ void VIDEO::handle_event(SDL_Event event){
 			case SDL_WINDOWEVENT_FOCUS_LOST:
 				while(!wait_for_focus()){}
 				break;
+
 			case SDL_WINDOWEVENT_MINIMIZED:
 				while(!wait_for_focus()){}
 				show();
@@ -177,8 +178,8 @@ void VIDEO::rand_color_scheme(){
 	srand(time(NULL));
 
 	//Randomly select 32-bit values for color
-	uint32_t newforeground_color = rand() % 4294967296;
-	uint32_t newbackground_color = rand() % 4294967296;
+	uint32_t newforeground_color = rand() % INTMAX;
+	uint32_t newbackground_color = rand() % INTMAX;
 
 	//Iterate through each pixel and update with new color
 	uint32_t* pixel;
@@ -208,9 +209,11 @@ void VIDEO::rand_color_scheme(){
 */
 
 void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
+	//Do not draw pixels out of screen
 	if(x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT){
 		return;
 	}
+
 	//Get pointer to first pixel of surface
 	uint32_t* pixmem = vid_mem + x*pixel_width + y*pixel_height*gWidth;
 
@@ -232,10 +235,10 @@ void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
 */
 
 bool VIDEO::xor_color(uint8_t x, uint8_t y){
+	//Do not draw pixels out of screen
 	if(x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT){
 		return false;
 	}
-	//if(x + y*gWidth > SCREEN_HEIGHT*SCREEN_WIDTH || x + y*gWidth < 0) return false;
 	//Grab the appropriate pixel color from the pixel map
 	uint32_t pix_color = pix_map[y][x];
 

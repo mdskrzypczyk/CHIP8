@@ -310,6 +310,9 @@ void CHIP8::mainloop(){
 	uint32_t timer_start = SDL_GetTicks();
 
 	while(!quit){
+		//sleep(0.5);
+
+		//print_sys_contents();
 		//Break out if PC escapes memory
 		if(PC > MEM_SIZE) break;
 
@@ -440,6 +443,7 @@ void CHIP8::show_video(){
 bool CHIP8::exec_op(uint16_t opcode){
 	//Increment PC
 	PC += 2;
+
 	//Extract all argument information from the opcode
 	uint8_t x = (uint8_t)((opcode >> 8) & 0x0F);
 	uint8_t y = (uint8_t)((opcode >> 4) & 0x0F);
