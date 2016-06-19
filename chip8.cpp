@@ -41,6 +41,9 @@ CHIP8::CHIP8()
 	//Assign input class
 	CHIPINPUT = INPUT();
 
+	//Assign audio class
+	CHIPAUDIO = AUDIO();
+
 	//Initialize internals
 	PC = PC_START;
 	SP = 0xFF;
@@ -74,6 +77,10 @@ bool CHIP8::init_video(){
 	bool success = CHIPVIDEO.init();
 	CHIPVIDEO.show();
 	return success;
+}
+
+bool CHIP8::init_audio(){
+	return CHIPAUDIO.init();
 }
 
 /*
@@ -263,6 +270,30 @@ bool CHIP8::save_state(const char* state_name){
 	return true;
 }
 
+bool CHIP8::load_config(){
+	std::ifstream config_file;
+	config_file.open("config.txt");
+	if(!config_file.good()){
+		std::cout << "Unable to open config.txt.\n" << std::endl;
+		return false;
+	}
+
+	uint8_t key = 0;
+
+	while(!config_file.eof()){
+		sleep(1);
+		char line[10];
+
+		config_file.getline(line, 3);
+
+		printf("%s\n", line);
+		printf("%d mapped to %c\n", key, line[3]);
+		key++;
+	}
+
+	return true;
+}
+
 /*
  * mainloop
  * Description: The main emulation loop of CHIP8.  Grabs current opcode from memory location
@@ -295,8 +326,12 @@ void CHIP8::mainloop(){
 		if(1000/FPS <= SDL_GetTicks() - timer_start){
 			timer_start = SDL_GetTicks();
 			show_video();
-			if(ST != 0) ST--;
-			if(DT != 0) DT--;			
+			if(ST != 0){
+				ST--;
+				//Render audio
+				CHIPAUDIO.play_tone();
+			}
+			if(DT != 0) DT--;	
 		}
 
 		//Check if we should update video frame
@@ -307,6 +342,14 @@ void CHIP8::mainloop(){
 		}
 	}
 }
+
+/*
+ * check_peripherals
+ * Description: Function for handling keyboard and window updates
+ * Inputs: None
+ * Outputs: None
+ * Return Value: None
+*/
 
 void CHIP8::check_peripherals(){
 	SDL_Event event;		//For processing keyboard/window updates

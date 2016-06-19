@@ -208,6 +208,9 @@ void VIDEO::rand_color_scheme(){
 */
 
 void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
+	if(x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT){
+		return;
+	}
 	//Get pointer to first pixel of surface
 	uint32_t* pixmem = vid_mem + x*pixel_width + y*pixel_height*gWidth;
 
@@ -229,6 +232,9 @@ void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb){
 */
 
 bool VIDEO::xor_color(uint8_t x, uint8_t y){
+	if(x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT){
+		return false;
+	}
 	//if(x + y*gWidth > SCREEN_HEIGHT*SCREEN_WIDTH || x + y*gWidth < 0) return false;
 	//Grab the appropriate pixel color from the pixel map
 	uint32_t pix_color = pix_map[y][x];

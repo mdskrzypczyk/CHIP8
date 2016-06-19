@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 
 #ifndef AUDIO_H
@@ -17,7 +18,7 @@ class AUDIO{
 		void play_tone();
 
 	private:
-		SDL_AudioSpec chip_tone;
+		Mix_Chunk* chip_tone;
 };
 
 #endif

@@ -1,5 +1,7 @@
 #include "graphics.h"
 #include "input.h"
+#include "audio.h"
+
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
@@ -36,6 +38,9 @@ class CHIP8
         //Video Initialization
         bool init_video();
 
+        //Audio Initialization
+        bool init_audio();
+
         //Function for loading a program file into the interpretter's memory
         bool load_program(const char* program_name);
 
@@ -44,6 +49,8 @@ class CHIP8
 
         //Function for saving Chip-8 state information
         bool save_state(const char* state_name);
+
+        bool load_config();
 
         //Main emulating loop for CHIP8
         void mainloop();
@@ -68,6 +75,7 @@ class CHIP8
     private:
         VIDEO CHIPVIDEO;        //Graphics/Video object for handling sprites and display
         INPUT CHIPINPUT;        //Input object for handling hex keyboard info
+        AUDIO CHIPAUDIO;        //Audio object for handling sound
         uint16_t PC;            //16-bit Program Counter
         uint8_t SP;             //8-bit Stack pointer
         uint16_t STACK[STACK_SIZE]; //Stack
