@@ -17,6 +17,8 @@ class INPUT{
 		//Function that returns pressed state of a given key
 		bool get_key_status(uint8_t key);
 
+		void flip_key_status(uint8_t key);
+
 		//Debugging
 		void print_keyboard_status();
 

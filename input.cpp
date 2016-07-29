@@ -162,6 +162,10 @@ bool INPUT::get_key_status(uint8_t key){
 	return key_status[key];
 }
 
+void INPUT::flip_key_status(uint8_t key){
+	key_status[key] = key_status[key] ? true : false;
+}
+
 //Debugging
 void INPUT::print_keyboard_status(){
 	for(int i = 0; i < NUM_KEYS; i++){
