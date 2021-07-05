@@ -8,42 +8,14 @@ This program requires SDL2 for compilation.  These can be installed by running:
 `apt-get install libsdl2-dev libsdl2-mixer-dev`
 
 ## Usage
-The program can be compiled using the provided Makefile.  Once the program has been built it can be run with: ./chip8 [program_name]
+The program can be compiled using the provided Makefile.  Once the program has been built it can be run with:
+
+`./chip8 /path/to/ch8/rom`
 
 ## Controls
 Currently the Chip-8's hexadecimal keyboard has been mapped in the following manner:
 
-0: 1
-
-1: 2
-
-2: 3
-
-3: 4
-
-4: Q
-
-5: W
-
-6: E
-
-7: R
-
-8: A
-
-9: S
-
-A: D
-
-B: F
-
-C: Z
-
-D: X
-
-E: C
-
-F: V
+![Chip-8 Keyboard Mapping](keyboard_mapping.png "Keyboard Mapping")
 
 ## Saving and Loading State
 Currently the interpretter can save/load state by pressing "P" and "L".  The interpretter allows for only one state save regardless of the loaded program.
