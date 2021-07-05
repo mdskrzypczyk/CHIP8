@@ -3,7 +3,9 @@
 This is a github repository containing code written for a Chip-8 Interpretter.  The code was written in C++ and uses SDL for handling graphics and user input.  The documentation used for my implemenation can be found here: http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
 
 ## Dependencies
-This program requires SDL2 for compilation.
+This program requires SDL2 for compilation.  These can be installed by running:
+
+`apt-get install libsdl2-dev libsdl2-mixer-dev`
 
 ## Usage
 The program can be compiled using the provided Makefile.  Once the program has been built it can be run with: ./chip8 [program_name]
