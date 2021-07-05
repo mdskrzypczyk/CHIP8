@@ -1,7 +1,7 @@
 all: chip8
 
 chip8: main.cpp graphics.o input.o chip8.o audio.o
-	g++ -Wall -Werror `sdl2-config --cflags --libs` -o chip8 chip8.o graphics.o input.o audio.o main.cpp; 
+	g++ -Wall -Werror -o chip8 chip8.o graphics.o input.o audio.o main.cpp `sdl2-config --cflags --libs`;
 
 graphics.o:
 	g++ -Wall -Werror -o graphics.o -c graphics.cpp
