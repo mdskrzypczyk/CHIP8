@@ -163,7 +163,7 @@ bool INPUT::get_key_status(uint8_t key){
 }
 
 void INPUT::flip_key_status(uint8_t key){
-	key_status[key] = key_status[key] ? true : false;
+	key_status[key] = !key_status[key];
 }
 
 //Debugging

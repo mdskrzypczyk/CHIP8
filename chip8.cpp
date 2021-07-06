@@ -311,7 +311,11 @@ bool CHIP8::load_config(){
 void CHIP8::mainloop(){
 	//Opcode and time variables
 	unsigned short opcode;
-	uint32_t timer_start = SDL_GetTicks();
+	uint32_t v_timer_start = SDL_GetTicks();
+	uint32_t sd_timer_start = SDL_GetTicks();
+
+    //Seed random generator
+    srand(time(NULL));
 
 	while(!quit){
 		//Break out if PC escapes memory
@@ -323,26 +327,29 @@ void CHIP8::mainloop(){
 		//Execute opcode (Decode and Execute)
 		draw = exec_op(opcode);
 
-		//Check for keyboard and window updates		
+		//Check for keyboard and window updates
 		check_peripherals();
 
-		//Update Sound Timer, Delay Timer, and Video Frame at 60Hz
-		if(1000/FPS <= SDL_GetTicks() - timer_start){
-			timer_start = SDL_GetTicks();
+        //Update Sound Timer and Delay Timer at 60Hz
+        if(1000/FPS <= SDL_GetTicks() - sd_timer_start){
+            if(DT != 0) DT--;
+            if(ST != 0){
+                ST--;
+                //Render audio
+                CHIPAUDIO.play_tone();
+            }
+        }
+
+        //Check if we should update video frame
+        if(1000/FPS <= SDL_GetTicks() - v_timer_start){
+            v_timer_start = SDL_GetTicks();
 			show_video();
-			if(ST != 0){
-				ST--;
-				//Render audio
-				CHIPAUDIO.play_tone();
-			}
-			if(DT != 0) DT--;	
 		}
 
-		//Check if we should update video frame
-		else if((1000/FPS > SDL_GetTicks() - timer_start) && draw){
-			SDL_Delay(1000/FPS - (SDL_GetTicks() - timer_start));
-			timer_start = SDL_GetTicks();
-			show_video();	
+		else if((1000/FPS > SDL_GetTicks() - v_timer_start) && draw){
+			SDL_Delay(1000/FPS - (SDL_GetTicks() - v_timer_start));
+            v_timer_start = SDL_GetTicks();
+			show_video();
 		}
 	}
 }
@@ -452,9 +459,6 @@ bool CHIP8::exec_op(uint16_t opcode){
 	uint8_t nibble = (uint8_t)(opcode & 0x0F);
 	SDL_Event event;
 
-	//Seed random generator
-	srand(time(NULL));
-
 	//Decode and execute opcode
 	switch(opcode >> 12){
 		case 0x0:
@@ -498,7 +502,7 @@ bool CHIP8::exec_op(uint16_t opcode){
 					  break;
 			case 0x7: V[0xF] = ((V[y] > V[x]) ? 1 : 0), V[x] = V[y] - V[x];		//Vx gets Vy - Vx, store borrow bit into VF
 					  break;
-			case 0xE: V[0xF] = ((V[x] & 0x8000) ? 1 : 0), V[x] = (V[x] << 1);	//VF gets MSB of Vx, Vx gets bitshifted to the left by 1
+			case 0xE: V[0xF] = ((V[x] & 0x80) ? 1 : 0), V[x] = (V[x] << 1);	//VF gets MSB of Vx, Vx gets bitshifted to the left by 1
 					  break;
 		}
  		break;
@@ -508,19 +512,19 @@ bool CHIP8::exec_op(uint16_t opcode){
  		break;
  		case 0xB: PC = V[0] + (opcode & 0xFFF);				//JMP, PC gets V0 + lower 12 bits of opcode
  		break;
- 		case 0xC: V[x] = (rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
+ 		case 0xC: V[x] = (uint8_t)(rand() % 256) & kk;				//Vx gets a random number ANDed with lower byte of opcode
  		break;
  		case 0xD: return draw_sprite(V[x], V[y], nibble); 			//Draw sprite at coordinate x, y that is nibble-lines long
  		case 0xE:				//2 Opcodes begin with Hex E
  		if((opcode & 0xFF) == 0x9E){
  			if(CHIPINPUT.get_key_status(V[x])){
- 				PC+=2; 
- 			}
+                PC+=2;
+            }
  		} 
  		else if((opcode & 0xFF) == 0xA1){
  			if(!CHIPINPUT.get_key_status(V[x])){
- 				PC+=2; 
- 			}
+                PC+=2;
+            }
  		}
  		break;
  		case 0xF:				//Nine opcodes begin with Hex F
