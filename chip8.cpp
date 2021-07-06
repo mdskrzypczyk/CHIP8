@@ -83,6 +83,10 @@ bool CHIP8::init_audio(){
 	return CHIPAUDIO.init();
 }
 
+void CHIP8::play_audio(){
+    CHIPAUDIO.play_tone();
+}
+
 /*
  * ~CHIP8
  * Description: Main destructor for CHIP8 object, CHIP8 does not allocate space for

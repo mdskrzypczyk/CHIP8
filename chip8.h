@@ -40,6 +40,7 @@ class CHIP8
 
         //Audio Initialization
         bool init_audio();
+        void play_audio();
 
         //Function for loading a program file into the interpretter's memory
         bool load_program(const char* program_name);

@@ -23,9 +23,9 @@ Currently the interpretter can save/load state by pressing "P" and "L".  The int
 ## Future Changes
 -Allow modification of keyboard mapping
 
--Add sound support
-
 ## Update/Changelog
+V1.5 Added audio support.
+
 V1.4: Added Save/Load state via pressing "P" and "L" respectively.  Adjusted FPS.
 
 V1.3: Added ajdustable window dimensions, pausing on lost focus/minimized window.
