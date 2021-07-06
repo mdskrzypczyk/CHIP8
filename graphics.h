@@ -1,6 +1,8 @@
 #include <SDL2/SDL.h>
-#include <stdio.h>
-#include <time.h>
+#include <cstdio>
+#include <ctime>
+#include <iostream>
+#include <mutex>
 
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
@@ -11,7 +13,9 @@
 #define BLACK 0				//Constants for Black and White to be used
 #define WHITE 16777215		//for 32-bit pixel color info in SDL window.
 #define INTMAX 4294967296
- 	
+
+static std::mutex mtx;
+
 class VIDEO{
 	public:
 		//Constructor for VIDEO object

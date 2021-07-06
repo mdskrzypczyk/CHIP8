@@ -175,6 +175,7 @@ uint32_t* VIDEO::get_pix_map(){
 */
 
 void VIDEO::rand_color_scheme(){
+    mtx.lock();
 	srand(time(NULL));
 
 	//Randomly select 32-bit values for color
@@ -189,12 +190,24 @@ void VIDEO::rand_color_scheme(){
 		else *pixel = newbackground_color; 
 	}
 
+    for(int y = 0; y < SCREEN_HEIGHT; y++){
+        for(int x = 0; x < SCREEN_WIDTH; x++){
+            if(pix_map[y][x] == foreground_color){
+                pix_map[y][x] = newforeground_color;
+            }
+            else if(pix_map[y][x] == background_color){
+                pix_map[y][x] = newbackground_color;
+            }
+        }
+    }
+
 	//Update the colors
 	foreground_color = newforeground_color;
 	background_color = newbackground_color;
 
 	//Redisplay
-	show();
+	// show();
+	mtx.unlock();
 }
 
 /*
@@ -239,20 +252,25 @@ bool VIDEO::xor_color(uint8_t x, uint8_t y){
 	if(x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT){
 		return false;
 	}
+	mtx.lock();
 	//Grab the appropriate pixel color from the pixel map
 	uint32_t pix_color = pix_map[y][x];
 
 	//Flip foreground/background color
+	bool ret = true;
 	if(pix_color == background_color){
 		draw_pixel(x, y, foreground_color);
 		pix_map[y][x] = foreground_color;
-		return false;						//Information not deleted
+		ret = false;						//Information not deleted
 	}
-	else{
+	else if (pix_color == foreground_color){
 		draw_pixel(x, y, background_color);
 		pix_map[y][x] = background_color;
-		return true;						//Information deleted
+		ret = true;						//Information deleted
 	}
+
+	mtx.unlock();
+	return ret;
 }
 
 /*
