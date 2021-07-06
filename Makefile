@@ -7,7 +7,7 @@ graphics.o:
 	g++ -Wall -Werror -o graphics.o -c graphics.cpp
 
 audio.o:
-	g++ -Wall -o audio.o -c audio.cpp -lSDL -lSDL_mixer
+	g++ -Wall -o audio.o -c audio.cpp -lSDL
 
 input.o:
 	g++ -Wall -Werror -o input.o -c input.cpp

@@ -5,7 +5,7 @@ This is a github repository containing code written for a Chip-8 Interpretter.  
 ## Dependencies
 This program requires SDL2 for compilation.  These can be installed by running:
 
-`apt-get install libsdl2-dev libsdl2-mixer-dev`
+`apt-get install libsdl2-dev`
 
 ## Usage
 The program can be compiled using the provided Makefile.  Once the program has been built it can be run with:
