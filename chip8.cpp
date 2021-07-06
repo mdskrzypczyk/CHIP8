@@ -314,9 +314,6 @@ void CHIP8::mainloop(){
 	uint32_t timer_start = SDL_GetTicks();
 
 	while(!quit){
-		//sleep(0.5);
-
-		//print_sys_contents();
 		//Break out if PC escapes memory
 		if(PC > MEM_SIZE) break;
 
