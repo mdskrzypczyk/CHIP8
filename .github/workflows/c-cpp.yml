@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install SDL
+    - run: sudo apt-get install libsdl2-dev
     - name: make
       run: make
