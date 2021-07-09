@@ -15,7 +15,7 @@ The program can be compiled using the provided Makefile.  Once the program has b
 ## Controls
 Currently the Chip-8's hexadecimal keyboard has been mapped in the following manner:
 
-![Chip-8 Keyboard Mapping](keyboard_mapping.png "Keyboard Mapping")
+![Chip-8 Keyboard Mapping](media/keyboard_mapping.png "Keyboard Mapping")
 
 ## Saving and Loading State
 Currently the interpretter can save/load state by pressing "P" and "L".  The interpretter allows for only one state save regardless of the loaded program.
