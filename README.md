@@ -8,7 +8,7 @@ This program requires SDL2 for compilation.  These can be installed by running:
 `apt-get install libsdl2-dev`
 
 ## Usage
-The program can be compiled using the provided Makefile.  Once the program has been built it can be run with:
+The program can be compiled using the provided CMake files.  Once the program has been built it can be run with:
 
 `./chip8 /path/to/ch8/rom`
 
