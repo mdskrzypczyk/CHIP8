@@ -1,4 +1,5 @@
 # CHIP-8 Interpretter
+![example workflow](https://github.com/mdskrzypczyk/CHIP8/actions/workflows/cmake.yml/badge.svg)
 
 This is a github repository containing code written for a Chip-8 Interpretter.  The code was written in C++ and uses SDL for handling graphics and user input.  The documentation used for my implemenation can be found here: http://devernay.free.fr/hacks/chip8/C8TECH10.HTM
 
