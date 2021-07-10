@@ -565,3 +565,7 @@ void CHIP8::print_sys_contents(){
 	}
 	printf("\n");
 }
+
+uint16_t CHIP8::get_pc(){
+    return PC;
+}
