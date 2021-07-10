@@ -13,6 +13,8 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 
+include_directories(${PROJECT_SOURCE_DIR}/include)
+
 add_executable(chip8
         src/main.cpp
         src/chip8.cpp
