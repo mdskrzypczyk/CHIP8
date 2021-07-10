@@ -73,6 +73,8 @@ class CHIP8
 
         void print_sys_contents();
 
+        uint16_t get_pc();
+
     private:
         VIDEO CHIPVIDEO;        //Graphics/Video object for handling sprites and display
         INPUT CHIPINPUT;        //Input object for handling hex keyboard info

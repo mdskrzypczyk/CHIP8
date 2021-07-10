@@ -22,3 +22,11 @@ add_executable(chip8
 )
 
 target_link_libraries(chip8 ${SDL2_LIBRARY})
+
+option(PACKAGE_TESTS "Build the tests" ON)
+
+if(PACKAGE_TESTS)
+    enable_testing()
+    include(GoogleTest)
+    add_subdirectory(tests)
+endif()
