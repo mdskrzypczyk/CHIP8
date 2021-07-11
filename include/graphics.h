@@ -2,6 +2,7 @@
 #define GRAPHICS_H
 
 #include <SDL2/SDL.h>
+
 #include <cstdio>
 #include <ctime>
 #include <iostream>

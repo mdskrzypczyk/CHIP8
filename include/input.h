@@ -2,6 +2,7 @@
 #define INPUT_H
 
 #include <SDL2/SDL.h>
+
 #include <iostream>
 
 #define NUM_KEYS 16  // Chip 8 has 16 hexadecimal keys on its keyboard
