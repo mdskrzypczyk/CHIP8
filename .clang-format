@@ -1,0 +1,45 @@
+---
+# Format C/C++ files based on Google C++ Style Guide
+# https://google.github.io/styleguide/cppguide.html
+Language: Cpp
+BasedOnStyle: Google
+
+# Use 4 spaces for indents and, as a consequence, 8 spaces for line
+# continuations and 2 spaces for access modifier (e.g. 'public:') outdents
+IndentWidth: 4
+ContinuationIndentWidth: 8
+AccessModifierOffset: -2
+
+# Force pointer alignment to right
+DerivePointerAlignment: false
+PointerAlignment: Right
+
+# Insert a space after C-style casts
+SpaceAfterCStyleCast: true
+
+# Rules for grouping #include statements
+IncludeCategories:
+  # Public platform includes ("qnodeos/platform/...") are grouped after public
+  # API includes ("qnodeos/...")
+  - Regex:      '^"qnodeos/platform/'
+    Priority:   2
+  - Regex:      '^"include/qnodeos/platform/'
+    Priority:   2
+  - Regex:      '^"qnodeos/'
+    Priority:   1
+  - Regex:      '^"include/qnodeos/'
+    Priority:   1
+  # Internal QNodeOS includes follow
+  - Regex:      '^"src/'
+    Priority:   3
+  # All other internal project includes follow
+  - Regex:      '^".*'
+    Priority:   4
+  # All other system includes follow
+  - Regex:      '^<.*\.h>'
+    Priority:   5
+  - Regex:      '^<.*'
+    Priority:   6
+  - Regex:      '.*'
+    Priority:   7
+...

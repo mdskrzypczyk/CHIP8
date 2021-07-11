@@ -1,47 +1,47 @@
-#include <SDL2/SDL.h>
-#include <iostream>
-#include <queue>
-#include <cmath>
-
 #ifndef AUDIO_H
 #define AUDIO_H
+
+#include <SDL2/SDL.h>
+
+#include <cmath>
+#include <iostream>
+#include <queue>
 
 const Sint16 AMPLITUDE = 2000;
 const int FREQUENCY = 44100;
 
-struct BeepObject
-{
+struct BeepObject {
     double freq;
     int samplesLeft;
 };
 
-class Beeper
-{
-    private:
-        double v;
-        std::queue<BeepObject> beeps;
-    public:
-        Beeper();
-        ~Beeper();
-        void beep(double freq, int duration);
-        void generateSamples(Sint16 *stream, int length);
-        void wait();
+class Beeper {
+  private:
+    double v;
+    std::queue<BeepObject> beeps;
+
+  public:
+    Beeper();
+    ~Beeper();
+    void beep(double freq, int duration);
+    void generateSamples(Sint16 *stream, int length);
+    void wait();
 };
 
-void audio_callback(void*, Uint8*, int);
+void audio_callback(void *_beeper, Uint8 *_stream, int _length);
 
-class AUDIO{
-	public:
-		AUDIO();
-		
-		~AUDIO();
+class AUDIO {
+  public:
+    AUDIO();
 
-		bool init();
+    ~AUDIO();
 
-		void play_tone();
+    bool init();
 
-	private:
-        Beeper b;
+    void play_tone();
+
+  private:
+    Beeper b;
 };
 
 #endif
