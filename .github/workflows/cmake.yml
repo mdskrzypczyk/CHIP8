@@ -17,9 +17,17 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Checkout submodules
+      # Update submodules (GoogleTest)
       run: git submodule update --init --recursive
 
-    - name: Install Dependencies
+    - name: Install Linting Dependencies
+      # Install Clang-Tidy
+      run: sudo apt-get install clang-format
+
+    - name: Lint
+      run: scripts/check-format.sh
+
+    - name: Install Build Dependencies
       # Install SDL2
       run: sudo apt-get install libsdl2-dev
 
@@ -29,12 +37,11 @@ jobs:
       run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
 
     - name: Build
-      # Build your program with the given configuration
+      # Build program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
     - name: Test
       working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.  
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+      # Execute tests defined by the CMake configuration.
       run: ctest -C ${{env.BUILD_TYPE}}
       
