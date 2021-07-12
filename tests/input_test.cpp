@@ -1,4 +1,5 @@
 #include "input.h"
+
 #include "gtest/gtest.h"
 
 TEST(InputTests, TestConstructor) {
