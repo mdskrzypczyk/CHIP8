@@ -32,11 +32,6 @@ macro(package_add_test TESTNAME)
     set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
 endmacro()
 
-package_add_test(opcode_test opcode_test.cpp
-        ${PROJECT_SOURCE_DIR}/src/chip8.cpp
-        ${PROJECT_SOURCE_DIR}/src/audio.cpp
+package_add_test(input_test input_test.cpp
         ${PROJECT_SOURCE_DIR}/src/input.cpp
-        ${PROJECT_SOURCE_DIR}/src/graphics.cpp
         )
-
-target_link_libraries(opcode_test ${SDL2_LIBRARY})
