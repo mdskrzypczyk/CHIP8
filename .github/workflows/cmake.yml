@@ -34,7 +34,7 @@ jobs:
 
     - name: Install Build Dependencies
       # Install SDL2
-      run: sudo apt-get install libsdl2-dev
+      run: sudo apt-get install gcovr libsdl2-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -49,3 +49,13 @@ jobs:
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.
       run: ctest -C ${{env.BUILD_TYPE}}
+
+    - name: Create code coverage
+      working-directory: ${{github.workspace}}/build
+      run: make coverage
+
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: ${{github.workspace}}/build/coverage
