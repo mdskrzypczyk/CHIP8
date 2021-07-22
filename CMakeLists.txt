@@ -30,7 +30,12 @@ target_link_libraries(chip8 ${SDL2_LIBRARY})
 option(PACKAGE_TESTS "Build the tests" ON)
 
 if(PACKAGE_TESTS)
+    # Testing
     enable_testing()
+    include(GoogleTest)
+    add_subdirectory(tests)
+
+    # Code Coverage
     include(CodeCoverage)
     append_coverage_compiler_flags()
     set(COVERAGE_LCOV_EXCLUDES "extern/*")
@@ -38,6 +43,12 @@ if(PACKAGE_TESTS)
             EXECUTABLE ctest --schedule-random -j 4 --test-dir tests
             EXCLUDE ${COVERAGE_LCOV_EXCLUDES}
             DEPENDENCIES input_test)
-    include(GoogleTest)
-    add_subdirectory(tests)
+endif()
+
+# Documentation
+find_package(Doxygen REQUIRED)
+if(DOXYGEN_FOUND)
+    set(DOXYGEN_OUTPUT_DIRECTORY docs)
+    set(DOXYGEN_GENERATE_HTML YES)
+    doxygen_add_docs(docs ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 endif()
