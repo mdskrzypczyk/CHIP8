@@ -50,6 +50,12 @@ jobs:
       # Execute tests defined by the CMake configuration.
       run: ctest -C ${{env.BUILD_TYPE}}
 
-    - name: Coverage
+    - name: Create code coverage
       working-directory: ${{github.workspace}}/build
       run: make coverage
+
+    - name: Archive code coverage results
+      uses: actions/upload-artifact@v2
+      with:
+        name: code-coverage-report
+        path: coverage/index.html
