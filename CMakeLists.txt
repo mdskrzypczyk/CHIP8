@@ -31,6 +31,13 @@ option(PACKAGE_TESTS "Build the tests" ON)
 
 if(PACKAGE_TESTS)
     enable_testing()
+    include(CodeCoverage)
+    append_coverage_compiler_flags()
+    set(COVERAGE_LCOV_EXCLUDES "extern/*")
+    setup_target_for_coverage_gcovr_html(NAME coverage
+            EXECUTABLE ctest --schedule-random -j 4 --test-dir tests
+            EXCLUDE ${COVERAGE_LCOV_EXCLUDES}
+            DEPENDENCIES input_test)
     include(GoogleTest)
     add_subdirectory(tests)
 endif()

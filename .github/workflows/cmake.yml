@@ -49,3 +49,7 @@ jobs:
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.
       run: ctest -C ${{env.BUILD_TYPE}}
+
+    - name: Coverage
+      working-directory: ${{github.workspace}}/build
+      run: make coverage
