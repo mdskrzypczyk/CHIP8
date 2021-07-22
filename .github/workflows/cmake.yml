@@ -61,6 +61,7 @@ jobs:
         path: ${{github.workspace}}/build/coverage
 
     - name: Create Documentation
+      working-directory: ${{github.workspace}}/build
       run: make docs
 
     - name: Archive Documentation
