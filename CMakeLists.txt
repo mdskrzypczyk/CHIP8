@@ -52,3 +52,5 @@ if(DOXYGEN_FOUND)
     set(DOXYGEN_GENERATE_HTML YES)
     doxygen_add_docs(docs ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src)
 endif()
+
+install(TARGETS chip8 DESTINATION bin)
