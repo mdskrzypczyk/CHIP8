@@ -32,6 +32,10 @@ jobs:
       # Update submodules (GoogleTest)
       run: git submodule update --init --recursive
 
+      # Refresh package repositories
+    - name: Update Repository Mirrors
+      run: sudo apt-get update
+
     - name: Install Build Dependencies
       # Install SDL2
       run: sudo apt-get install doxygen gcovr libsdl2-dev
