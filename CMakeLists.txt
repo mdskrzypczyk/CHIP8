@@ -30,19 +30,20 @@ target_link_libraries(chip8 ${SDL2_LIBRARY})
 option(PACKAGE_TESTS "Build the tests" ON)
 
 if(PACKAGE_TESTS)
-    # Testing
-    enable_testing()
-    include(GoogleTest)
-    add_subdirectory(tests)
-
     # Code Coverage
+    # Note: This needs to be done before including GoogleTest below
     include(CodeCoverage)
     append_coverage_compiler_flags()
     set(COVERAGE_LCOV_EXCLUDES "extern/*")
     setup_target_for_coverage_gcovr_html(NAME coverage
-            EXECUTABLE ctest --schedule-random -j 4 --test-dir tests
+            EXECUTABLE ctest --test-dir tests
             EXCLUDE ${COVERAGE_LCOV_EXCLUDES}
             DEPENDENCIES input_test)
+
+    # Testing
+    enable_testing()
+    include(GoogleTest)
+    add_subdirectory(tests)
 endif()
 
 # Documentation

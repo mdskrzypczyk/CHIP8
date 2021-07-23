@@ -23,12 +23,20 @@ class Beeper {
   public:
     Beeper();
     ~Beeper();
+    std::queue<BeepObject> *get_beeps();
     void beep(double freq, int duration);
     void generateSamples(Sint16 *stream, int length);
     void wait();
 };
 
 void audio_callback(void *_beeper, Uint8 *_stream, int _length);
+
+class AudioInitChecker {
+  public:
+    bool check_sdl_init_code(int init_code);
+    bool check_open_audio_code(int open_audio_code);
+    bool check_audio_format(SDL_AudioSpec *want, SDL_AudioSpec *have);
+};
 
 class AUDIO {
   public:
@@ -40,8 +48,13 @@ class AUDIO {
 
     void play_tone();
 
+    Beeper *get_beeper();
+    void set_beeper(Beeper *beeper);
+
   private:
     Beeper b;
+
+    AudioInitChecker init_checker;
 };
 
 #endif
