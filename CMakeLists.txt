@@ -36,7 +36,7 @@ if(PACKAGE_TESTS)
     append_coverage_compiler_flags()
     set(COVERAGE_LCOV_EXCLUDES "extern/*")
     setup_target_for_coverage_gcovr_html(NAME coverage
-            EXECUTABLE ctest --test-dir tests
+            EXECUTABLE ctest -C Debug --test-dir tests
             EXCLUDE ${COVERAGE_LCOV_EXCLUDES}
             DEPENDENCIES input_test)
 

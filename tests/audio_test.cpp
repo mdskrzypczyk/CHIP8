@@ -3,12 +3,6 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-class BeeperMock : public Beeper {
-  public:
-    MOCK_METHOD(void, beep, (double freq, int duration));
-    MOCK_METHOD(void, wait, ());
-};
-
 TEST(BeeperTests, TestBeep) {
     Beeper beeper = Beeper();
     std::queue<BeepObject> *beeps = beeper.get_beeps();
@@ -137,10 +131,5 @@ TEST(AUDIOTests, TestPlayTone) {
 
     bool init_success = audio.init();
     EXPECT_EQ(init_success, true);
-
-    BeeperMock beeper = BeeperMock();
-    audio.set_beeper(&beeper);
-    EXPECT_CALL(beeper, beep(testing::_, testing::_)).Times(1);
-    EXPECT_CALL(beeper, wait()).Times(1);
     audio.play_tone();
 }
