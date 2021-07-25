@@ -38,7 +38,7 @@ jobs:
 
     - name: Install Build Dependencies
       # Install SDL2
-      run: sudo apt-get install doxygen=1.8.13-10 gcovr=3.4-1 libsdl2-dev=2.0.8
+      run: sudo apt-get install doxygen gcovr libsdl2-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
