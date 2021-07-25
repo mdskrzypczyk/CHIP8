@@ -109,7 +109,7 @@ bool AUDIO::init() {
     want.channels = 2;
     want.samples = 4096;
     want.callback = audio_callback;
-    want.userdata = this;
+    want.userdata = &b;
 
     int open_audio_code = SDL_OpenAudio(&want, &have);
     success &= init_checker.check_open_audio_code(open_audio_code);

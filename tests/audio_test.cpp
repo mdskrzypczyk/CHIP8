@@ -64,9 +64,10 @@ TEST(BeeperTests, TestWait) {
 
     EXPECT_EQ(beeps->empty(), true);
     beeper->wait();
+    EXPECT_EQ(beeps->empty(), true);
 
     double freq = 3.14;
-    int duration = 1;
+    int duration = 42;
     beeper->beep(freq, duration);
     EXPECT_EQ(beeps->empty(), false);
 
@@ -127,10 +128,23 @@ TEST(AUDIOTests, TestConstructor) {
     EXPECT_NE(beeper, nullptr);
 }
 
+TEST(AUDIOTests, TestInit) {
+    AUDIO audio = AUDIO();
+
+    bool init_success = audio.init();
+    EXPECT_EQ(init_success, true);
+}
+
 TEST(AUDIOTests, TestPlayTone) {
     AUDIO audio = AUDIO();
 
     bool init_success = audio.init();
     EXPECT_EQ(init_success, true);
+
+    Beeper *beeper = audio.get_beeper();
+    std::queue<BeepObject> *beeps = beeper->get_beeps();
+    EXPECT_EQ(beeps->empty(), true);
+
     audio.play_tone();
+    EXPECT_EQ(beeps->empty(), true);
 }
