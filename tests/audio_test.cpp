@@ -61,8 +61,8 @@ TEST(BeeperTests, TestWait) {
 
     Beeper *beeper = audio.get_beeper();
     std::queue<BeepObject> *beeps = beeper->get_beeps();
-
     EXPECT_EQ(beeps->empty(), true);
+
     beeper->wait();
     EXPECT_EQ(beeps->empty(), true);
 
@@ -70,9 +70,6 @@ TEST(BeeperTests, TestWait) {
     int duration = 42;
     beeper->beep(freq, duration);
     EXPECT_EQ(beeps->empty(), false);
-
-    beeper->wait();
-    EXPECT_EQ(beeps->empty(), true);
 }
 
 TEST(AudioInitChecker, TestChecks) {
