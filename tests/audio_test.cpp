@@ -77,7 +77,7 @@ TEST(AudioInitChecker, TestChecks) {
 
     int code = 0;
     bool status = checker.check_sdl_init_code(code);
-    EXPECT_EQ(status, true) << "SDL Init Failure Code " << code << std::endl;
+    EXPECT_EQ(status, true);
 
     code = -1;
     status = checker.check_sdl_init_code(code);
@@ -85,7 +85,7 @@ TEST(AudioInitChecker, TestChecks) {
 
     code = 0;
     status = checker.check_open_audio_code(code);
-    EXPECT_EQ(status, true) << "SDL Open Audio Failure Code " << code << std::endl;
+    EXPECT_EQ(status, true);
 
     code = -1;
     status = checker.check_open_audio_code(code);

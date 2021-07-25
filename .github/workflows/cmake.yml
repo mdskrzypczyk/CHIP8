@@ -49,13 +49,10 @@ jobs:
       # Build program with the given configuration
       run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
 
-    - name: Setup Virtual Audio Device
-      run: sudo jackd -d dummy &
-
     - name: Test
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.
-      run: ctest -C ${{env.BUILD_TYPE}} --verbose
+      run: sudo jackd -d dummy & ctest -C ${{env.BUILD_TYPE}} --verbose
 
     - name: Create code coverage
       working-directory: ${{github.workspace}}/build
