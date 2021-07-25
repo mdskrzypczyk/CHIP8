@@ -99,7 +99,7 @@ bool AudioInitChecker::check_audio_format(SDL_AudioSpec *want,
 bool AUDIO::init() {
     bool success = true;
     int init_code = SDL_Init(SDL_INIT_AUDIO);
-    success &= init_checker.check_sdl_init_code(init_code);
+    success &&= init_checker.check_sdl_init_code(init_code);
 
     SDL_AudioSpec want, have;
 
@@ -112,8 +112,8 @@ bool AUDIO::init() {
     want.userdata = &b;
 
     int open_audio_code = SDL_OpenAudio(&want, &have);
-    success &= init_checker.check_open_audio_code(open_audio_code);
-    success &= init_checker.check_audio_format(&want, &have);
+    success &&= init_checker.check_open_audio_code(open_audio_code);
+    success &&= init_checker.check_audio_format(&want, &have);
 
     // start play audio
     SDL_PauseAudio(0);
