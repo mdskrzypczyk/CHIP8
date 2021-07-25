@@ -68,9 +68,10 @@ TEST(BeeperTests, TestWait) {
     double freq = 3.14;
     int duration = 1;
     beeper->beep(freq, duration);
-
     EXPECT_EQ(beeps->empty(), false);
+
     beeper->wait();
+    EXPECT_EQ(beeps->empty(), true);
 }
 
 TEST(AudioInitChecker, TestChecks) {
