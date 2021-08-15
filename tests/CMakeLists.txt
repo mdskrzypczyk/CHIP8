@@ -15,6 +15,9 @@ set_target_properties(gtest_main PROPERTIES FOLDER extern)
 set_target_properties(gmock PROPERTIES FOLDER extern)
 set_target_properties(gmock_main PROPERTIES FOLDER extern)
 
+find_package(SDL2 REQUIRED)
+include_directories(${SDL2_INCLUDE_DIR})
+
 macro(package_add_test TESTNAME)
     # create an exectuable in which the tests will be stored
     add_executable(${TESTNAME} ${ARGN})
@@ -30,8 +33,12 @@ macro(package_add_test TESTNAME)
             PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_DIR}"
             )
     set_target_properties(${TESTNAME} PROPERTIES FOLDER tests)
+    target_link_libraries(${TESTNAME} ${SDL2_LIBRARY})
 endmacro()
 
+package_add_test(audio_test audio_test.cpp
+        ${PROJECT_SOURCE_DIR}/src/audio.cpp
+        )
 package_add_test(input_test input_test.cpp
         ${PROJECT_SOURCE_DIR}/src/input.cpp
         )

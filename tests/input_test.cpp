@@ -93,6 +93,12 @@ TEST(InputTests, TestHandleKeyDownKeyUp) {
             EXPECT_EQ(input.get_key_status(i), false);
         }
     }
+
+    // Check invalid keys
+    uint8_t ret = input.handle_keydown(SDLK_UNKNOWN);
+    EXPECT_EQ(ret, KEY_ERR);
+    ret = input.handle_keyup(SDLK_UNKNOWN);
+    EXPECT_EQ(ret, KEY_ERR);
 }
 
 TEST(InputTests, TestFlipKeyStatus) {
@@ -136,4 +142,10 @@ TEST(InputTests, TestPollKeyboard) {
     event.type = SDL_QUIT;
     ret = input.poll_keyboard(event);
     EXPECT_EQ(ret, keymap[SDL_QUIT]);
+}
+
+TEST(InputTests, TestPrintKeyboard) {
+    INPUT input = INPUT();
+    input.flip_key_status(KEY_0);
+    input.print_keyboard_status();
 }
