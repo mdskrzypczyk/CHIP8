@@ -38,7 +38,7 @@ if(PACKAGE_TESTS)
     # Code Coverage
     include(CodeCoverage)
     append_coverage_compiler_flags()
-    set(COVERAGE_LCOV_EXCLUDES "extern/*")
+    set(COVERAGE_LCOV_EXCLUDES "extern/*" "tests/*")
     setup_target_for_coverage_gcovr_html(NAME coverage
             EXECUTABLE ctest --schedule-random -j 4 --test-dir tests
             EXCLUDE ${COVERAGE_LCOV_EXCLUDES}
