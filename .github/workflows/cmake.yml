@@ -38,7 +38,7 @@ jobs:
 
     - name: Install Build Dependencies
       # Install SDL2
-      run: sudo apt-get install doxygen gcovr jackd libsdl2-dev
+      run: sudo apt-get install doxygen gcovr libsdl2-dev
 
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -52,7 +52,7 @@ jobs:
     - name: Test
       working-directory: ${{github.workspace}}/build
       # Execute tests defined by the CMake configuration.
-      run: sudo jackd -d dummy & ctest -C ${{env.BUILD_TYPE}} --verbose
+      run: ctest -C ${{env.BUILD_TYPE}} --verbose
 
     - name: Create code coverage
       working-directory: ${{github.workspace}}/build

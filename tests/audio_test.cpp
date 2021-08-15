@@ -53,7 +53,7 @@ TEST(BeeperTests, TestGenerateSamples) {
     EXPECT_EQ(beeps->empty(), true);
 }
 
-TEST(BeeperTests, TestWait) {
+TEST(BeeperTests, DISABLED_TestWait) {
     AUDIO audio = AUDIO();
 
     bool init_success = audio.init();
@@ -125,14 +125,14 @@ TEST(AUDIOTests, TestConstructor) {
     EXPECT_NE(beeper, nullptr);
 }
 
-TEST(AUDIOTests, TestInit) {
+TEST(AUDIOTests, DISABLED_TestInit) {
     AUDIO audio = AUDIO();
 
     bool init_success = audio.init();
     EXPECT_EQ(init_success, true);
 }
 
-TEST(AUDIOTests, TestPlayTone) {
+TEST(AUDIOTests, DISABLED_TestPlayTone) {
     AUDIO audio = AUDIO();
 
     bool init_success = audio.init();
