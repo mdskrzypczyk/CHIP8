@@ -4,6 +4,18 @@ Beeper::Beeper() {}
 
 Beeper::~Beeper() {}
 
+std::queue<BeepObject> *Beeper::get_beeps() { return &beeps; }
+
+void Beeper::beep(double freq, int duration) {
+    BeepObject bo;
+    bo.freq = freq;
+    bo.samplesLeft = duration * FREQUENCY / 1000;
+
+    SDL_LockAudio();
+    beeps.push(bo);
+    SDL_UnlockAudio();
+}
+
 void Beeper::generateSamples(Sint16 *stream, int length) {
     int i = 0;
     while (i < length) {
@@ -31,16 +43,6 @@ void Beeper::generateSamples(Sint16 *stream, int length) {
     }
 }
 
-void Beeper::beep(double freq, int duration) {
-    BeepObject bo;
-    bo.freq = freq;
-    bo.samplesLeft = duration * FREQUENCY / 1000;
-
-    SDL_LockAudio();
-    beeps.push(bo);
-    SDL_UnlockAudio();
-}
-
 void Beeper::wait() {
     int size;
     do {
@@ -59,18 +61,45 @@ void audio_callback(void *_beeper, Uint8 *_stream, int _length) {
     beeper->generateSamples(stream, length);
 }
 
-AUDIO::AUDIO() { b = Beeper(); }
+AUDIO::AUDIO() {
+    b = Beeper();
+    init_checker = AudioInitChecker();
+}
 
 AUDIO::~AUDIO() {
     SDL_CloseAudio();
     SDL_Quit();
 }
 
-bool AUDIO::init() {
-    if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+bool AudioInitChecker::check_sdl_init_code(int init_code) {
+    if (init_code < 0) {
         std::cout << "Unable to initialize audio.\n" << std::endl;
         return false;
     }
+    return true;
+}
+
+bool AudioInitChecker::check_open_audio_code(int open_audio_code) {
+    if (open_audio_code < 0) {
+        std::cout << "Failed to open audio: " << SDL_GetError() << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool AudioInitChecker::check_audio_format(SDL_AudioSpec *want,
+                                          SDL_AudioSpec *have) {
+    if (have->format != want->format) {
+        std::cout << "We didn't get Sint16 audio format." << std::endl;
+        return false;
+    }
+    return true;
+}
+
+bool AUDIO::init() {
+    bool success = true;
+    int init_code = SDL_Init(SDL_INIT_AUDIO);
+    success = success && init_checker.check_sdl_init_code(init_code);
 
     SDL_AudioSpec want, have;
 
@@ -80,22 +109,23 @@ bool AUDIO::init() {
     want.channels = 2;
     want.samples = 4096;
     want.callback = audio_callback;
-    want.userdata = this;
+    want.userdata = &b;
 
-    if (SDL_OpenAudio(&want, &have) < 0) {
-        std::cout << "Failed to open audio: " << SDL_GetError() << std::endl;
-    }
-    if (have.format != want.format) {
-        std::cout << "We didn't get Sint16 audio format." << std::endl;
-    }
+    int open_audio_code = SDL_OpenAudio(&want, &have);
+    success = success && init_checker.check_open_audio_code(open_audio_code);
+    success = success && init_checker.check_audio_format(&want, &have);
 
     // start play audio
     SDL_PauseAudio(0);
 
-    return true;
+    return success;
 }
 
 void AUDIO::play_tone() {
     b.beep(440, 100);
     b.wait();
 }
+
+Beeper *AUDIO::get_beeper() { return &b; }
+
+void AUDIO::set_beeper(Beeper *beeper) { b = *beeper; }

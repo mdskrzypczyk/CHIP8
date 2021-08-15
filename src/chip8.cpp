@@ -347,7 +347,7 @@ void CHIP8::mainloop() {
             if (ST != 0) {
                 ST--;
                 // Render audio
-                CHIPAUDIO.play_tone();
+                play_audio();
             }
         }
 
