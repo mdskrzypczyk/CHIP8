@@ -1,5 +1,22 @@
 #include "graphics.h"
 
+bool VideoInitChecker::check_sdl_init_code(int init_code) {
+    if(init_code < 0) {
+        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+        return false;
+    }
+    return true;
+};
+
+bool VideoInitChecker::check_sdl_create_window_code(SDL_Window *window_ptr) {
+    if(window_ptr == nullptr) {
+        printf("Window could not be created! SDL_Error: %s\n",
+               SDL_GetError());
+        return false;
+    }
+    return true;
+};
+
 /*
  * VIDEO
  * Description: Main constructor for VIDEO object.  Sets the pixel width/height
@@ -44,29 +61,25 @@ bool VIDEO::init() {
     bool success = true;
 
     // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
-        success = false;
-    } else {
+    int init_code = SDL_Init(SDL_INIT_VIDEO);
+    success = success && video_init_checker.check_sdl_init_code(init_code);
+    if (success) {
         // Create window
         gWindow = SDL_CreateWindow(
                 "CHIP-8 Interpretter", SDL_WINDOWPOS_UNDEFINED,
                 SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT,
                 SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
-        if (gWindow == nullptr) {
-            printf("Window could not be created! SDL_Error: %s\n",
-                   SDL_GetError());
-            success = false;
-        } else {
+        success = success && video_init_checker.check_sdl_create_window_code(gWindow);
+        if (success) {
             SDL_SetWindowMinimumSize(gWindow, SCREEN_WIDTH * 4,
                                      SCREEN_HEIGHT * 4);
             // Get window surface
             gSurface = SDL_GetWindowSurface(gWindow);
+            vid_mem = (uint32_t *) gSurface->pixels;
+            clear();
         }
     }
 
-    vid_mem = (uint32_t *) gSurface->pixels;
-    clear();
     return success;
 }
 
@@ -160,6 +173,13 @@ void VIDEO::draw_pix_map() {
         }
     }
 }
+
+uint32_t VIDEO::get_pixel_width() { return pixel_width; }
+uint32_t VIDEO::get_pixel_height() { return pixel_height; }
+int VIDEO::get_window_width() { return gWidth; }
+int VIDEO::get_window_height() { return gHeight; }
+uint32_t VIDEO::get_background_color() { return background_color; }
+uint32_t VIDEO::get_foreground_color() { return foreground_color; }
 
 uint32_t *VIDEO::get_pix_map() { return pix_map[0]; }
 

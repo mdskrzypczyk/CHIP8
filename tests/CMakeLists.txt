@@ -42,3 +42,6 @@ package_add_test(audio_test audio_test.cpp
 package_add_test(input_test input_test.cpp
         ${PROJECT_SOURCE_DIR}/src/input.cpp
         )
+package_add_test(graphics_test graphics_test.cpp
+        ${PROJECT_SOURCE_DIR}/src/graphics.cpp
+        )
