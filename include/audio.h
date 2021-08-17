@@ -49,7 +49,6 @@ class AUDIO {
     void play_tone();
 
     Beeper *get_beeper();
-    void set_beeper(Beeper *beeper);
 
   private:
     Beeper b;

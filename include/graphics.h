@@ -75,12 +75,14 @@ class VIDEO {
     uint32_t get_background_color();
     uint32_t get_foreground_color();
 
-    uint32_t *get_pix_map();
+    uint32_t (*get_pix_map())[SCREEN_WIDTH];
+    uint32_t *get_vid_mem();
 
   private:
     VideoInitChecker video_init_checker;
-    SDL_Window *gWindow;  // Pointer to SDL window object
-    uint32_t pixel_width;    // Pixel dimensions in terms of larger scale window dimensions
+    SDL_Window *gWindow;   // Pointer to SDL window object
+    uint32_t pixel_width;  // Pixel dimensions in terms of larger scale window
+                           // dimensions
     uint32_t pixel_height;
     int gWidth;
     int gHeight;

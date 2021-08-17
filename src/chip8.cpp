@@ -174,9 +174,9 @@ bool CHIP8::load_state(const char *state_name) {
 
     // Restore Chip-8 state.
     // 1.  Restore PC, SP, I, ST, and DT
-    PC = ((uint16_t)(state_data[0]) << 8) | state_data[1];
+    PC = ((uint16_t) (state_data[0]) << 8) | state_data[1];
     SP = state_data[2];
-    I = ((uint16_t)(state_data[3]) << 8) | state_data[4];
+    I = ((uint16_t) (state_data[3]) << 8) | state_data[4];
     ST = state_data[5];
     DT = state_data[6];
 
@@ -188,7 +188,7 @@ bool CHIP8::load_state(const char *state_name) {
     // 3.  Restore Stack
     for (int i = STACK_OFFSET; i < MEM_OFFSET; i += 2) {
         STACK[i - STACK_OFFSET] =
-                ((uint16_t)(state_data[i]) << 8) | state_data[i + 1];
+                ((uint16_t) (state_data[i]) << 8) | state_data[i + 1];
     }
 
     // 4.  Restore Memory
@@ -199,12 +199,17 @@ bool CHIP8::load_state(const char *state_name) {
     CHIPVIDEO.clear();  // Clear the display
 
     // 5.  Restore the pixel map
-    uint32_t *pixel_map = CHIPVIDEO.get_pix_map();
-    for (int i = 0; i < 2048; i++) {
-        pixel_map[i] = (uint32_t) state_data[4 * i + PIX_OFFSET] << 24 |
-                       (uint32_t) state_data[4 * i + 1 + PIX_OFFSET] << 16 |
-                       (uint32_t) state_data[4 * i + 2 + PIX_OFFSET] << 8 |
-                       (uint32_t) state_data[4 * i + 3 + PIX_OFFSET];
+    uint32_t(*pixel_map)[SCREEN_WIDTH] = CHIPVIDEO.get_pix_map();
+    int i;
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        i = y * SCREEN_WIDTH;
+        for (int x = 0; x < SCREEN_WIDTH; x++, i++) {
+            pixel_map[y][x] =
+                    (uint32_t) state_data[4 * i + PIX_OFFSET] << 24 |
+                    (uint32_t) state_data[4 * i + 1 + PIX_OFFSET] << 16 |
+                    (uint32_t) state_data[4 * i + 2 + PIX_OFFSET] << 8 |
+                    (uint32_t) state_data[4 * i + 3 + PIX_OFFSET];
+        }
     }
 
     // Redraw the pixel map
@@ -228,11 +233,11 @@ bool CHIP8::save_state(const char *state_name) {
     uint8_t state_data[STATE_SIZE];
 
     // Save PC
-    state_data[0] = (uint8_t)(PC >> 8), state_data[1] = (uint8_t)(PC);
+    state_data[0] = (uint8_t) (PC >> 8), state_data[1] = (uint8_t) (PC);
     // Save SP
     state_data[2] = SP;
     // Save I
-    state_data[3] = (uint8_t)(I >> 8), state_data[4] = (uint8_t)(I);
+    state_data[3] = (uint8_t) (I >> 8), state_data[4] = (uint8_t) (I);
     // Save ST and DT
     state_data[5] = ST, state_data[6] = DT;
 
@@ -243,8 +248,8 @@ bool CHIP8::save_state(const char *state_name) {
 
     // Save Stack
     for (int i = 0; i < STACK_SIZE; i++) {
-        state_data[2 * i + STACK_OFFSET] = (uint8_t)(STACK[i] >> 8);
-        state_data[2 * i + 1 + STACK_OFFSET] = (uint8_t)(STACK[i]);
+        state_data[2 * i + STACK_OFFSET] = (uint8_t) (STACK[i] >> 8);
+        state_data[2 * i + 1 + STACK_OFFSET] = (uint8_t) (STACK[i]);
     }
 
     // Save Memory
@@ -253,12 +258,18 @@ bool CHIP8::save_state(const char *state_name) {
     }
 
     // Save screen info
-    uint32_t *pixel_map = CHIPVIDEO.get_pix_map();
-    for (int i = 0; i < 2048; i++) {
-        state_data[4 * i + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 24);
-        state_data[4 * i + 1 + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 16);
-        state_data[4 * i + 2 + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 8);
-        state_data[4 * i + 3 + PIX_OFFSET] = (uint8_t)(pixel_map[i]);
+    uint32_t(*pixel_map)[SCREEN_WIDTH] = CHIPVIDEO.get_pix_map();
+    int i;
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        i = y * SCREEN_WIDTH;
+        for (int x = 0; x < SCREEN_WIDTH; x++, i++) {
+            state_data[4 * i + PIX_OFFSET] = (uint8_t) (pixel_map[y][x] >> 24);
+            state_data[4 * i + 1 + PIX_OFFSET] =
+                    (uint8_t) (pixel_map[y][x] >> 16);
+            state_data[4 * i + 2 + PIX_OFFSET] =
+                    (uint8_t) (pixel_map[y][x] >> 8);
+            state_data[4 * i + 3 + PIX_OFFSET] = (uint8_t) (pixel_map[y][x]);
+        }
     }
 
     // Write state information to file
@@ -456,10 +467,10 @@ bool CHIP8::exec_op(uint16_t opcode) {
     PC += 2;
 
     // Extract all argument information from the opcode
-    uint8_t x = (uint8_t)((opcode >> 8) & 0x0F);
-    uint8_t y = (uint8_t)((opcode >> 4) & 0x0F);
-    uint8_t kk = (uint8_t)(opcode & 0xFF);
-    uint8_t nibble = (uint8_t)(opcode & 0x0F);
+    uint8_t x = (uint8_t) ((opcode >> 8) & 0x0F);
+    uint8_t y = (uint8_t) ((opcode >> 4) & 0x0F);
+    uint8_t kk = (uint8_t) (opcode & 0xFF);
+    uint8_t nibble = (uint8_t) (opcode & 0x0F);
     SDL_Event event;
 
     // Decode and execute opcode
@@ -577,7 +588,7 @@ bool CHIP8::exec_op(uint16_t opcode) {
             break;
         }
         case 0xC: {
-            V[x] = (uint8_t)(rand() % 256) &
+            V[x] = (uint8_t) (rand() % 256) &
                    kk;  // Vx gets a random number ANDed with lower byte of
                         // opcode
             break;
