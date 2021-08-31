@@ -18,6 +18,12 @@
 
 static std::mutex mtx;
 
+class VideoInitChecker {
+  public:
+    bool check_sdl_init_code(int init_code);
+    bool check_sdl_create_window_code(SDL_Window *window_ptr);
+};
+
 class VIDEO {
   public:
     // Constructor for VIDEO object
@@ -62,14 +68,22 @@ class VIDEO {
     // Draws pixels to the SDL window
     void draw_pixel(uint8_t x, uint8_t y, uint32_t rgb);
 
-    uint32_t *get_pix_map();
+    uint32_t get_pixel_width();
+    uint32_t get_pixel_height();
+    int get_window_width();
+    int get_window_height();
+    uint32_t get_background_color();
+    uint32_t get_foreground_color();
 
-    // Pixel dimensions in terms of larger scale window dimensions
-    uint32_t pixel_width;
-    uint32_t pixel_height;
+    uint32_t (*get_pix_map())[SCREEN_WIDTH];
+    uint32_t *get_vid_mem();
 
   private:
-    SDL_Window *gWindow;  // Pointer to SDL window object
+    VideoInitChecker video_init_checker;
+    SDL_Window *gWindow;   // Pointer to SDL window object
+    uint32_t pixel_width;  // Pixel dimensions in terms of larger scale window
+                           // dimensions
+    uint32_t pixel_height;
     int gWidth;
     int gHeight;
     SDL_Surface *gSurface;     // Main surface we draw to

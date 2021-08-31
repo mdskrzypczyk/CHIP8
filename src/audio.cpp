@@ -43,7 +43,9 @@ void Beeper::generateSamples(Sint16 *stream, int length) {
     }
 }
 
+// LCOV_EXCL_START
 void Beeper::wait() {
+    // Excluded from coverage due to soundcard requirements
     int size;
     do {
         SDL_Delay(20);
@@ -54,12 +56,14 @@ void Beeper::wait() {
 }
 
 void audio_callback(void *_beeper, Uint8 *_stream, int _length) {
+    // Excluded from coverage due to soundcard requirements
     Sint16 *stream = (Sint16 *) _stream;
     int length = _length / 2;
     Beeper *beeper = (Beeper *) _beeper;
 
     beeper->generateSamples(stream, length);
 }
+// LCOV_EXCL_STOP
 
 AUDIO::AUDIO() {
     b = Beeper();
@@ -96,7 +100,9 @@ bool AudioInitChecker::check_audio_format(SDL_AudioSpec *want,
     return true;
 }
 
+// LCOV_EXCL_START
 bool AUDIO::init() {
+    // Excluded from coverage due to soundcard requirements
     bool success = true;
     int init_code = SDL_Init(SDL_INIT_AUDIO);
     success = success && init_checker.check_sdl_init_code(init_code);
@@ -122,10 +128,10 @@ bool AUDIO::init() {
 }
 
 void AUDIO::play_tone() {
+    // Excluded from coverage due to soundcard requirements
     b.beep(440, 100);
     b.wait();
 }
+// LCOV_EXCL_STOP
 
 Beeper *AUDIO::get_beeper() { return &b; }
-
-void AUDIO::set_beeper(Beeper *beeper) { b = *beeper; }

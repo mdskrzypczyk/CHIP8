@@ -199,12 +199,17 @@ bool CHIP8::load_state(const char *state_name) {
     CHIPVIDEO.clear();  // Clear the display
 
     // 5.  Restore the pixel map
-    uint32_t *pixel_map = CHIPVIDEO.get_pix_map();
-    for (int i = 0; i < 2048; i++) {
-        pixel_map[i] = (uint32_t) state_data[4 * i + PIX_OFFSET] << 24 |
-                       (uint32_t) state_data[4 * i + 1 + PIX_OFFSET] << 16 |
-                       (uint32_t) state_data[4 * i + 2 + PIX_OFFSET] << 8 |
-                       (uint32_t) state_data[4 * i + 3 + PIX_OFFSET];
+    uint32_t(*pixel_map)[SCREEN_WIDTH] = CHIPVIDEO.get_pix_map();
+    int i;
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        i = y * SCREEN_WIDTH;
+        for (int x = 0; x < SCREEN_WIDTH; x++, i++) {
+            pixel_map[y][x] =
+                    (uint32_t) state_data[4 * i + PIX_OFFSET] << 24 |
+                    (uint32_t) state_data[4 * i + 1 + PIX_OFFSET] << 16 |
+                    (uint32_t) state_data[4 * i + 2 + PIX_OFFSET] << 8 |
+                    (uint32_t) state_data[4 * i + 3 + PIX_OFFSET];
+        }
     }
 
     // Redraw the pixel map
@@ -253,12 +258,18 @@ bool CHIP8::save_state(const char *state_name) {
     }
 
     // Save screen info
-    uint32_t *pixel_map = CHIPVIDEO.get_pix_map();
-    for (int i = 0; i < 2048; i++) {
-        state_data[4 * i + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 24);
-        state_data[4 * i + 1 + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 16);
-        state_data[4 * i + 2 + PIX_OFFSET] = (uint8_t)(pixel_map[i] >> 8);
-        state_data[4 * i + 3 + PIX_OFFSET] = (uint8_t)(pixel_map[i]);
+    uint32_t(*pixel_map)[SCREEN_WIDTH] = CHIPVIDEO.get_pix_map();
+    int i;
+    for (int y = 0; y < SCREEN_HEIGHT; y++) {
+        i = y * SCREEN_WIDTH;
+        for (int x = 0; x < SCREEN_WIDTH; x++, i++) {
+            state_data[4 * i + PIX_OFFSET] = (uint8_t)(pixel_map[y][x] >> 24);
+            state_data[4 * i + 1 + PIX_OFFSET] =
+                    (uint8_t)(pixel_map[y][x] >> 16);
+            state_data[4 * i + 2 + PIX_OFFSET] =
+                    (uint8_t)(pixel_map[y][x] >> 8);
+            state_data[4 * i + 3 + PIX_OFFSET] = (uint8_t)(pixel_map[y][x]);
+        }
     }
 
     // Write state information to file
