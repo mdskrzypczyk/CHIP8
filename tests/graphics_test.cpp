@@ -25,14 +25,14 @@ TEST(VIDEOTests, TestConstructor) {
     EXPECT_EQ(video.get_foreground_color(), WHITE);
 }
 
-TEST(VIDEOTests, TestInit_SDL_REQUIRED) {
+TEST(VIDEOTests, DISABLED_TestInit) {
     VIDEO video = VIDEO();
 
     bool success = video.init();
     EXPECT_EQ(success, true);
 }
 
-TEST(VIDEOTests, TestGetColor_SDL_REQUIRED) {
+TEST(VIDEOTests, DISABLED_TestGetColor) {
     VIDEO video = VIDEO();
     video.init();
 
@@ -40,7 +40,7 @@ TEST(VIDEOTests, TestGetColor_SDL_REQUIRED) {
     EXPECT_EQ(video.get_color(255, 255, 255), WHITE);
 }
 
-TEST(VIDEOTests, TestClear) {
+TEST(VIDEOTests, DISABLED_TestClear) {
     VIDEO video = VIDEO();
     video.init();
 
@@ -63,7 +63,7 @@ TEST(VIDEOTests, TestClear) {
     }
 }
 
-TEST(VIDEOTests, TestDrawPixel) {
+TEST(VIDEOTests, DISABLED_TestDrawPixel) {
     VIDEO video = VIDEO();
     video.init();
 
@@ -105,7 +105,7 @@ TEST(VIDEOTests, TestDrawPixel) {
     }
 }
 
-TEST(VIDEOTests, TestXorColor) {
+TEST(VIDEOTests, DISABLED_TestXorColor) {
     VIDEO video = VIDEO();
     video.init();
     video.clear();
@@ -131,7 +131,7 @@ TEST(VIDEOTests, TestXorColor) {
     EXPECT_EQ(pix_map[test_y][test_x], bg_color);
 }
 
-TEST(VIDEOTests, TestDrawPixMap) {
+TEST(VIDEOTests, DISABLED_TestDrawPixMap) {
     VIDEO video = VIDEO();
     video.init();
     video.clear();
@@ -163,7 +163,7 @@ TEST(VIDEOTests, TestDrawPixMap) {
     }
 }
 
-TEST(VIDEOTests, TestRandColorScheme) {
+TEST(VIDEOTests, DISABLED_TestRandColorScheme) {
     VIDEO video = VIDEO();
     video.init();
     video.clear();
