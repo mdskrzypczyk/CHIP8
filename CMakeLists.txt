@@ -34,11 +34,11 @@ if(PACKAGE_TESTS)
     # Note: This needs to be done before including GoogleTest below
     include(CodeCoverage)
     append_coverage_compiler_flags()
-    set(COVERAGE_LCOV_EXCLUDES "extern/*" "include/*" "src/main.cpp" "tests/*")
+    set(COVERAGE_LCOV_EXCLUDES "build/*" "cmake-build-debug/*" "extern/*" "include/*" "src/main.cpp" "tests/*")
     setup_target_for_coverage_gcovr_html(NAME coverage
             EXECUTABLE ctest -C Debug --test-dir tests
             EXCLUDE ${COVERAGE_LCOV_EXCLUDES}
-            DEPENDENCIES input_test)
+            DEPENDENCIES audio_test chip8_test input_test graphics_test)
 
     # Testing
     enable_testing()

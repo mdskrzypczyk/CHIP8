@@ -39,6 +39,13 @@ endmacro()
 package_add_test(audio_test audio_test.cpp
         ${PROJECT_SOURCE_DIR}/src/audio.cpp
         )
+package_add_test(chip8_test chip8_test.cpp
+        ${PROJECT_SOURCE_DIR}/src/audio.cpp
+        ${PROJECT_SOURCE_DIR}/src/chip8.cpp
+        ${PROJECT_SOURCE_DIR}/src/input.cpp
+        ${PROJECT_SOURCE_DIR}/src/graphics.cpp
+        )
+file(COPY "resources/test_opcode.ch8" DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 package_add_test(input_test input_test.cpp
         ${PROJECT_SOURCE_DIR}/src/input.cpp
         )
