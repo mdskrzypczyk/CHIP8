@@ -60,7 +60,7 @@ TEST(CHIP8Tests, TestConstructor) {
     }
 }
 
-TEST(CHIP8Tests, TestInitComponents) {
+TEST(CHIP8Tests, DISABLED_TestInitComponents) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -102,7 +102,7 @@ TEST(CHIP8Tests, TestLoadProgram) {
     }
 }
 
-TEST(CHIP8Tests, TestSaveState) {
+TEST(CHIP8Tests, DISABLED_TestSaveState) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -115,7 +115,7 @@ TEST(CHIP8Tests, TestSaveState) {
     EXPECT_EQ(chip8.load_state(state_path), true);
 }
 
-TEST(CHIP8Tests, DISABLED_TestExecOp_00E0) {
+TEST(CHIP8Tests, DISABLED_DISABLED_TestExecOp_00E0) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -125,7 +125,7 @@ TEST(CHIP8Tests, DISABLED_TestExecOp_00E0) {
     EXPECT_EQ(true, false);
 }
 
-TEST(CHIP8Tests, TestExecOp_00EE) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_00EE) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -142,7 +142,7 @@ TEST(CHIP8Tests, TestExecOp_00EE) {
     EXPECT_EQ(chip8.get_sp(), curr_sp - 1);
 }
 
-TEST(CHIP8Tests, TestExecOp_1nnn) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_1nnn) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -154,7 +154,7 @@ TEST(CHIP8Tests, TestExecOp_1nnn) {
     EXPECT_EQ(chip8.get_pc(), test_nibble);
 }
 
-TEST(CHIP8Tests, TestExecOp_2nnn) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_2nnn) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -174,7 +174,7 @@ TEST(CHIP8Tests, TestExecOp_2nnn) {
     EXPECT_EQ(chip8.get_pc(), test_nibble);
 }
 
-TEST(CHIP8Tests, TestExecOp_3xkk) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_3xkk) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -197,7 +197,7 @@ TEST(CHIP8Tests, TestExecOp_3xkk) {
     EXPECT_EQ(chip8.get_pc(), curr_pc + 4);
 }
 
-TEST(CHIP8Tests, TestExecOp_4xkk) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_4xkk) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -220,7 +220,7 @@ TEST(CHIP8Tests, TestExecOp_4xkk) {
     EXPECT_EQ(chip8.get_pc(), curr_pc + 2);
 }
 
-TEST(CHIP8Tests, TestExecOp_5xy0) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_5xy0) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -243,7 +243,7 @@ TEST(CHIP8Tests, TestExecOp_5xy0) {
     EXPECT_EQ(chip8.get_pc(), curr_pc + 2);
 }
 
-TEST(CHIP8Tests, TestExecOp_6xkk) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_6xkk) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -260,7 +260,7 @@ TEST(CHIP8Tests, TestExecOp_6xkk) {
     EXPECT_EQ(v[x], kk);
 }
 
-TEST(CHIP8Tests, TestExecOp_7xkk) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_7xkk) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -280,7 +280,7 @@ TEST(CHIP8Tests, TestExecOp_7xkk) {
     EXPECT_EQ(v[x], 2*kk);
 }
 
-TEST(CHIP8Tests, TestExecOp_8xy0) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xy0) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -298,7 +298,7 @@ TEST(CHIP8Tests, TestExecOp_8xy0) {
     EXPECT_EQ(v[x], v[y]);
 }
 
-TEST(CHIP8Tests, TestExecOp_8xy1) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xy1) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -318,7 +318,7 @@ TEST(CHIP8Tests, TestExecOp_8xy1) {
     EXPECT_EQ(v[x], valx | valy);
 }
 
-TEST(CHIP8Tests, TestExecOp_8xy2) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xy2) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -338,7 +338,7 @@ TEST(CHIP8Tests, TestExecOp_8xy2) {
     EXPECT_EQ(v[x], valx & valy);
 }
 
-TEST(CHIP8Tests, TestExecOp_8xy3) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xy3) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -358,7 +358,7 @@ TEST(CHIP8Tests, TestExecOp_8xy3) {
     EXPECT_EQ(v[x], valx ^ valy);
 }
 
-TEST(CHIP8Tests, TestExecOp_8xy4) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xy4) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -385,7 +385,7 @@ TEST(CHIP8Tests, TestExecOp_8xy4) {
     EXPECT_EQ(v[x], (uint8_t) (valx + valy));
 }
 
-TEST(CHIP8Tests, TestExecOp_8xy5) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xy5) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -412,7 +412,7 @@ TEST(CHIP8Tests, TestExecOp_8xy5) {
     EXPECT_EQ(v[x], (uint8_t) (valx - valy));
 }
 
-TEST(CHIP8Tests, TestExecOp_8xy6) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xy6) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -437,7 +437,7 @@ TEST(CHIP8Tests, TestExecOp_8xy6) {
     EXPECT_EQ(v[x], (uint8_t) (valx >> 1));
 }
 
-TEST(CHIP8Tests, TestExecOp_8xy7) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xy7) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -462,7 +462,7 @@ TEST(CHIP8Tests, TestExecOp_8xy7) {
     EXPECT_EQ(v[x], 0xFF);
 }
 
-TEST(CHIP8Tests, TestExecOp_8xyE) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_8xyE) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -487,7 +487,7 @@ TEST(CHIP8Tests, TestExecOp_8xyE) {
     EXPECT_EQ(v[x], 0xE0);
 }
 
-TEST(CHIP8Tests, TestExecOp_9xy0) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_9xy0) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -513,7 +513,7 @@ TEST(CHIP8Tests, TestExecOp_9xy0) {
     EXPECT_EQ(chip8.get_pc(), curr_pc + 4);
 }
 
-TEST(CHIP8Tests, TestExecOp_Annn) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Annn) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -525,7 +525,7 @@ TEST(CHIP8Tests, TestExecOp_Annn) {
     EXPECT_EQ(chip8.get_index_reg(), nnn);
 }
 
-TEST(CHIP8Tests, TestExecOp_Bnnn) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Bnnn) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -542,7 +542,7 @@ TEST(CHIP8Tests, TestExecOp_Bnnn) {
     EXPECT_EQ(chip8.get_pc(), nnn + val0);
 }
 
-TEST(CHIP8Tests, TestExecOp_Cxkk) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Cxkk) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -558,7 +558,7 @@ TEST(CHIP8Tests, TestExecOp_Cxkk) {
     EXPECT_NE(v[x], 0x00);
 }
 
-TEST(CHIP8Tests, TestExecOp_Ex9E) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Ex9E) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -587,7 +587,7 @@ TEST(CHIP8Tests, TestExecOp_Ex9E) {
     EXPECT_EQ(chip8.get_pc(), curr_pc + 4);
 }
 
-TEST(CHIP8Tests, TestExecOp_ExA1) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_ExA1) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -616,7 +616,7 @@ TEST(CHIP8Tests, TestExecOp_ExA1) {
     EXPECT_EQ(chip8.get_pc(), curr_pc + 2);
 }
 
-TEST(CHIP8Tests, TestExecOp_Fx07) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Fx07) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -634,7 +634,7 @@ TEST(CHIP8Tests, TestExecOp_Fx07) {
     EXPECT_EQ(v[x], curr_dt);
 }
 
-TEST(CHIP8Tests, TestExecOp_Fx15) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Fx15) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -653,7 +653,7 @@ TEST(CHIP8Tests, TestExecOp_Fx15) {
     EXPECT_EQ(valx, curr_dt);
 }
 
-TEST(CHIP8Tests, TestExecOp_Fx18) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Fx18) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -672,7 +672,7 @@ TEST(CHIP8Tests, TestExecOp_Fx18) {
     EXPECT_EQ(valx, curr_st);
 }
 
-TEST(CHIP8Tests, TestExecOp_Fx1E) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Fx1E) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -691,7 +691,7 @@ TEST(CHIP8Tests, TestExecOp_Fx1E) {
     EXPECT_EQ(chip8.get_index_reg(), curr_index_reg + valx);
 }
 
-TEST(CHIP8Tests, TestExecOp_Fx29) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Fx29) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -710,7 +710,7 @@ TEST(CHIP8Tests, TestExecOp_Fx29) {
     EXPECT_EQ(chip8.get_index_reg(), (uint16_t) (5*valx));
 }
 
-TEST(CHIP8Tests, TestExecOp_Fx33) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Fx33) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -731,7 +731,7 @@ TEST(CHIP8Tests, TestExecOp_Fx33) {
     EXPECT_EQ(curr_mem[curr_index_reg + 2], 3);
 }
 
-TEST(CHIP8Tests, TestExecOp_Fx55) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Fx55) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
@@ -751,7 +751,7 @@ TEST(CHIP8Tests, TestExecOp_Fx55) {
     }
 }
 
-TEST(CHIP8Tests, TestExecOp_Fx65) {
+TEST(CHIP8Tests, DISABLED_TestExecOp_Fx65) {
     CHIP8 chip8 = CHIP8();
     EXPECT_EQ(chip8.init_video(), true);
     EXPECT_EQ(chip8.init_audio(), true);
