@@ -1,9 +1,9 @@
 #include "chip8.h"
 
-/* Hexadecimal Sprite Bit Map loaded into Interpreter Area of CHIP 8 Memory
- * (0x000 - 0x1FF)
- */
-uint8_t SPRITE_MAP[80] = {
+// Hexadecimal Sprite Bit Map loaded into Interpreter Area of CHIP 8 Memory
+// (0x000 - 0x1FF)
+
+uint8_t SPRITE_MAP[MAP_LENGTH] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0,  // Hex digit 0
         0x20, 0x60, 0x20, 0x20, 0x70,  // Hex digit 1
         0xF0, 0x10, 0xF0, 0x80, 0xF0,  // Hex digit 2
@@ -22,15 +22,13 @@ uint8_t SPRITE_MAP[80] = {
         0xF0, 0x80, 0xF0, 0x80, 0x80   // Hex digit F
 };
 
-/*
- * CHIP8
- * Description: Main constructor for CHIP8 object, initializes graphic
- * components and clears all internal registers.  Sets PC to program start.
- * Loads CHIP8 memory 0x000-0x1FF with Hex Sprite data.
- * Inputs: None
- * Outputs: None
- * Return Value: None
- */
+// CHIP8
+// Description: Main constructor for CHIP8 object, initializes graphic
+//  components and clears all internal registers.  Sets PC to program start.
+// Loads CHIP8 memory 0x000-0x1FF with Hex Sprite data.
+// Inputs: None
+// Outputs: None
+// Return Value: None
 
 CHIP8::CHIP8() {
     quit = false;
@@ -81,28 +79,26 @@ bool CHIP8::init_video() {
 
 bool CHIP8::init_audio() { return CHIPAUDIO.init(); }
 
+// LCOV_EXCL_START
 void CHIP8::play_audio() { CHIPAUDIO.play_tone(); }
+// LCOV_EXCL_STOP
 
-/*
- * ~CHIP8
- * Description: Main destructor for CHIP8 object, CHIP8 does not allocate space
- * for its own variables so we need to make sure SDL window closes properly.
- * Inputs: None
- * Outputs: None
- * Return Value: None
- */
+// ~CHIP8
+// Description: Main destructor for CHIP8 object, CHIP8 does not allocate space
+// for its own variables so we need to make sure SDL window closes properly.
+// Inputs: None
+// Outputs: None
+// Return Value: None
 
 CHIP8::~CHIP8() { CHIPVIDEO.close(); }
 
-/*
- * load_program
- * Description: Reads binary file CHIP8 program and stores data into memory
- * starting at address 0x200.
- * Inputs: program_name - A string containing the file name of the program to
- * load.
- * Outputs: None
- * Return Value: true/false - Indicates of load was successful
- */
+// load_program
+// Description: Reads binary file CHIP8 program and stores data into memory
+// starting at address 0x200.
+// Inputs: program_name - A string containing the file name of the program to
+// load.
+// Outputs: None
+// Return Value: true/false - Indicates of load was successful
 
 bool CHIP8::load_program(const char *program_name) {
     // Temporary data array, clear contents so we don't load garbage
@@ -125,10 +121,12 @@ bool CHIP8::load_program(const char *program_name) {
 
     size_t result =
             fread(program_data, sizeof(uint8_t), MAX_PROG_SIZE, program_file);
+    // LCOV_EXCL_START
     if (result != f_size) {
         std::cout << "Error reading file.\n" << std::endl;
         return false;
     }
+    // LCOV_EXCL_STOP
 
     fclose(program_file);
 
@@ -140,15 +138,13 @@ bool CHIP8::load_program(const char *program_name) {
     return true;
 }
 
-/*
- * load_state
- * Description: Reads binary file Chip-8 state and restores the state of the
- * Chip-8.
- * Inputs: state_name - A string containing the name of the file to load the
- * state from
- * Outputs: None
- * Return Value: true/false - Indicates if restore was successful
- */
+// load_state
+// Description: Reads binary file Chip-8 state and restores the state of the
+// Chip-8.
+// Inputs: state_name - A string containing the name of the file to load the
+// state from
+// Outputs: None
+// Return Value: true/false - Indicates if restore was successful
 
 bool CHIP8::load_state(const char *state_name) {
     // Temporary array to hold state info
@@ -156,18 +152,24 @@ bool CHIP8::load_state(const char *state_name) {
 
     // Open the state file
     FILE *state_file = fopen(state_name, "r");
+
+    // LCOV_EXCL_START
     if (state_file == nullptr) {
         std::cout << "Unable to load state.\n" << std::endl;
         return false;
     }
+    // LCOV_EXCL_STOP
 
     // Read state data
     size_t bytes_read =
             fread(state_data, sizeof(uint8_t), STATE_SIZE, state_file);
+
+    // LCOV_EXCL_START
     if (bytes_read != STATE_SIZE) {
         std::cout << "Error loading state file.\n" << std::endl;
         return false;
     }
+    // LCOV_EXCL_STOP
 
     // Close state file
     fclose(state_file);
@@ -200,9 +202,8 @@ bool CHIP8::load_state(const char *state_name) {
 
     // 5.  Restore the pixel map
     uint32_t(*pixel_map)[SCREEN_WIDTH] = CHIPVIDEO.get_pix_map();
-    int i;
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
-        i = y * SCREEN_WIDTH;
+        int i = y * SCREEN_WIDTH;
         for (int x = 0; x < SCREEN_WIDTH; x++, i++) {
             pixel_map[y][x] =
                     (uint32_t) state_data[4 * i + PIX_OFFSET] << 24 |
@@ -219,14 +220,12 @@ bool CHIP8::load_state(const char *state_name) {
     return true;
 }
 
-/*
- * save_state
- * Description: Turns internal Chip-8 state into array and writes data to file.
- * Inputs: state_name - A string containing the name of the file to save state
- * to.
- * Outputs: None
- * Return Value: true/false - Indicates if save was successful
- */
+// save_state
+// Description: Turns internal Chip-8 state into array and writes data to file.
+// Inputs: state_name - A string containing the name of the file to save state
+// to.
+// Outputs: None
+// Return Value: true/false - Indicates if save was successful
 
 bool CHIP8::save_state(const char *state_name) {
     // Temporary array to hold state info
@@ -259,9 +258,8 @@ bool CHIP8::save_state(const char *state_name) {
 
     // Save screen info
     uint32_t(*pixel_map)[SCREEN_WIDTH] = CHIPVIDEO.get_pix_map();
-    int i;
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
-        i = y * SCREEN_WIDTH;
+        int i = y * SCREEN_WIDTH;
         for (int x = 0; x < SCREEN_WIDTH; x++, i++) {
             state_data[4 * i + PIX_OFFSET] = (uint8_t)(pixel_map[y][x] >> 24);
             state_data[4 * i + 1 + PIX_OFFSET] =
@@ -274,18 +272,24 @@ bool CHIP8::save_state(const char *state_name) {
 
     // Write state information to file
     FILE *state_file = fopen(state_name, "wb");
+
+    // LCOV_EXCL_START
     if (state_file == nullptr) {
         std::cout << "Unable to open file for writing.\n" << std::endl;
         return false;
     }
+    // LCOV_EXCL_STOP
 
     // Write state data, check if all data written
     size_t bytes_written =
             fwrite(state_data, sizeof(uint8_t), STATE_SIZE, state_file);
+
+    // LCOV_EXCL_START
     if (bytes_written != STATE_SIZE) {
         std::cout << "Error writing state to file.\n" << std::endl;
         return false;
     }
+    // LCOV_EXCL_STOP
 
     // Close the file
     fclose(state_file);
@@ -293,6 +297,7 @@ bool CHIP8::save_state(const char *state_name) {
     return true;
 }
 
+// LCOV_EXCL_START
 bool CHIP8::load_config() {
     std::ifstream config_file;
     config_file.open("config.txt");
@@ -316,17 +321,17 @@ bool CHIP8::load_config() {
 
     return true;
 }
+// LCOV_EXCL_STOP
 
-/*
- * mainloop
- * Description: The main emulation loop of CHIP8.  Grabs current opcode from
- * memory location indicated by PC, increments the PC by 2, executes the opcode,
- * checks to display new video frame at 60Hz.
- * Inputs: None
- * Outputs: None
- * Return Value: None
- */
+// mainloop
+// Description: The main emulation loop of CHIP8.  Grabs current opcode from
+// memory location indicated by PC, increments the PC by 2, executes the opcode,
+// checks to display new video frame at 60Hz.
+// Inputs: None
+// Outputs: None
+// Return Value: None
 
+// LCOV_EXCL_START
 void CHIP8::mainloop() {
     // Opcode and time variables
     unsigned short opcode;
@@ -373,15 +378,15 @@ void CHIP8::mainloop() {
         }
     }
 }
+// LCOV_EXCL_STOP
 
-/*
- * check_peripherals
- * Description: Function for handling keyboard and window updates
- * Inputs: None
- * Outputs: None
- * Return Value: None
- */
+// check_peripherals
+// Description: Function for handling keyboard and window updates
+// Inputs: None
+// Outputs: None
+// Return Value: None
 
+// LCOV_EXCL_START
 void CHIP8::check_peripherals() {
     SDL_Event event;  // For processing keyboard/window updates
 
@@ -403,16 +408,15 @@ void CHIP8::check_peripherals() {
         }
     }
 }
+// LCOV_EXCL_STOP
 
-/*
- * draw_sprite
- * Description: Helper function for handling DXYN instruction for CHIP8.
- * Inputs: x - CHIP8 x coordinate to start drawing sprite at
- *		   y - CHIP8 y coordinate to start drawing sprite at
- *		   nibble - Number of bytes that make up the sprite
- * Outputs: None
- * Return Value: None
- */
+// draw_sprite
+// Description: Helper function for handling DXYN instruction for CHIP8.
+// Inputs: x - CHIP8 x coordinate to start drawing sprite at
+// y - CHIP8 y coordinate to start drawing sprite at
+// nibble - Number of bytes that make up the sprite
+// Outputs: None
+// Return Value: None
 
 bool CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble) {
     // Set VF to 0
@@ -444,23 +448,21 @@ bool CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble) {
     return V[0xF] == 0;
 }
 
-/*
- * show_video
- * Description: Makes a call to the VIDEO's show function, updates the frame
- * Inputs: None
- * Outputs: None
- * Return Value: None
- */
+// show_video
+// Description: Makes a call to the VIDEO's show function, updates the frame
+// Inputs: None
+// Outputs: None
+// Return Value: None
 
+// LCOV_EXCL_START
 void CHIP8::show_video() { CHIPVIDEO.show(); }
+// LCOV_EXCL_STOP
 
-/*
- * exec_op
- * Description: Executes the current opcode and updates internal registers
- * Inputs: opcode - The 16-bit opcode to execute
- * Outputs: None
- * Return Value: None
- */
+// exec_op
+// Description: Executes the current opcode and updates internal registers
+// Inputs: opcode - The 16-bit opcode to execute
+// Outputs: None
+// Return Value: None
 
 bool CHIP8::exec_op(uint16_t opcode) {
     // Increment PC
@@ -588,9 +590,8 @@ bool CHIP8::exec_op(uint16_t opcode) {
             break;
         }
         case 0xC: {
-            V[x] = (uint8_t)(rand() % 256) &
-                   kk;  // Vx gets a random number ANDed with lower byte of
-                        // opcode
+            // Vx gets a random number ANDed with lower byte of opcode
+            V[x] = (uint8_t)(rand() % 256) & kk;
             break;
         }
         case 0xD: {
@@ -666,7 +667,7 @@ bool CHIP8::exec_op(uint16_t opcode) {
     return false;
 }
 
-/* Debugging functions */
+// Debugging functions
 void CHIP8::print_mem_contents() {
     for (int i = PC_START; i < MEM_SIZE; i += 2) {
         printf("%x: %x%x\n", i, MEM[i], MEM[i + 1]);
@@ -683,3 +684,13 @@ void CHIP8::print_sys_contents() {
 }
 
 uint16_t CHIP8::get_pc() { return PC; }
+bool CHIP8::get_quit() { return quit; }
+bool CHIP8::get_draw() { return draw; }
+uint8_t CHIP8::get_sp() { return SP; }
+uint16_t *CHIP8::get_stack() { return STACK; }
+uint8_t *CHIP8::get_mem() { return MEM; }
+uint8_t *CHIP8::get_reg_file() { return V; }
+uint16_t CHIP8::get_index_reg() { return I; }
+uint8_t CHIP8::get_delay_timer() { return DT; }
+uint8_t CHIP8::get_sound_timer() { return ST; }
+INPUT *CHIP8::get_input_device() { return &CHIPINPUT; }

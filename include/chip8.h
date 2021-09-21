@@ -28,6 +28,11 @@
 #define MEM_OFFSET (STACK_OFFSET + 2 * STACK_SIZE)
 #define PIX_OFFSET (MEM_OFFSET + MEM_SIZE)
 
+/* Hexadecimal Sprite Bit Map loaded into Interpreter Area of CHIP 8 Memory
+ * (0x000 - 0x1FF)
+ */
+extern uint8_t SPRITE_MAP[MAP_LENGTH];
+
 class CHIP8 {
   public:
     // Main constructor for CHIP8
@@ -75,6 +80,16 @@ class CHIP8 {
     void print_sys_contents();
 
     uint16_t get_pc();
+    uint8_t get_sp();
+    uint16_t *get_stack();
+    uint8_t *get_mem();
+    uint8_t *get_reg_file();
+    uint16_t get_index_reg();
+    uint8_t get_delay_timer();
+    uint8_t get_sound_timer();
+    bool get_quit();
+    bool get_draw();
+    INPUT *get_input_device();
 
   private:
     VIDEO CHIPVIDEO;  // Graphics/Video object for handling sprites and display
