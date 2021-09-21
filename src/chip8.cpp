@@ -138,7 +138,6 @@ bool CHIP8::load_program(const char *program_name) {
     return true;
 }
 
-
 // load_state
 // Description: Reads binary file Chip-8 state and restores the state of the
 // Chip-8.

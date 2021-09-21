@@ -3,14 +3,13 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
-
 class MockVIDEO : public VIDEO {
   public:
     MOCK_METHOD(bool, init, ());
     MOCK_METHOD(void, show, ());
     MOCK_METHOD(void, clear, ());
     MOCK_METHOD(void, close, ());
-    MOCK_METHOD(uint32_t**, get_pix_map, ());
+    MOCK_METHOD(uint32_t **, get_pix_map, ());
     MOCK_METHOD(void, draw_pix_map, ());
     MOCK_METHOD(void, handle_event, (SDL_Event event));
     MOCK_METHOD(void, rand_color_scheme, ());
@@ -131,7 +130,7 @@ TEST(CHIP8Tests, DISABLED_TestExecOp_00EE) {
     EXPECT_EQ(chip8.init_audio(), true);
 
     uint16_t test_opcode = 0x00EE;
-    uint16_t* stack = chip8.get_stack();
+    uint16_t *stack = chip8.get_stack();
     uint8_t curr_sp = chip8.get_sp();
     uint16_t curr_pc = chip8.get_pc();
 
@@ -277,7 +276,7 @@ TEST(CHIP8Tests, DISABLED_TestExecOp_7xkk) {
     EXPECT_EQ(v[x], kk);
 
     chip8.exec_op(test_opcode);
-    EXPECT_EQ(v[x], 2*kk);
+    EXPECT_EQ(v[x], 2 * kk);
 }
 
 TEST(CHIP8Tests, DISABLED_TestExecOp_8xy0) {
@@ -376,13 +375,13 @@ TEST(CHIP8Tests, DISABLED_TestExecOp_8xy4) {
     v[y] = valy;
     chip8.exec_op(test_opcode);
     EXPECT_EQ(v[0xF], 1);
-    EXPECT_EQ(v[x], (uint8_t) (valx + valy));
+    EXPECT_EQ(v[x], (uint8_t)(valx + valy));
 
     valx = 0x01;
     v[x] = valx;
     chip8.exec_op(test_opcode);
     EXPECT_EQ(v[0xF], 0);
-    EXPECT_EQ(v[x], (uint8_t) (valx + valy));
+    EXPECT_EQ(v[x], (uint8_t)(valx + valy));
 }
 
 TEST(CHIP8Tests, DISABLED_TestExecOp_8xy5) {
@@ -403,13 +402,13 @@ TEST(CHIP8Tests, DISABLED_TestExecOp_8xy5) {
     v[y] = valy;
     chip8.exec_op(test_opcode);
     EXPECT_EQ(v[0xF], 1);
-    EXPECT_EQ(v[x], (uint8_t) (valx - valy));
+    EXPECT_EQ(v[x], (uint8_t)(valx - valy));
 
     valx = 0x01;
     v[x] = valx;
     chip8.exec_op(test_opcode);
     EXPECT_EQ(v[0xF], 0);
-    EXPECT_EQ(v[x], (uint8_t) (valx - valy));
+    EXPECT_EQ(v[x], (uint8_t)(valx - valy));
 }
 
 TEST(CHIP8Tests, DISABLED_TestExecOp_8xy6) {
@@ -428,13 +427,13 @@ TEST(CHIP8Tests, DISABLED_TestExecOp_8xy6) {
     v[x] = valx;
     chip8.exec_op(test_opcode);
     EXPECT_EQ(v[0xF], 1);
-    EXPECT_EQ(v[x], (uint8_t) (valx >> 1));
+    EXPECT_EQ(v[x], (uint8_t)(valx >> 1));
 
     valx = 0x8;
     v[x] = valx;
     chip8.exec_op(test_opcode);
     EXPECT_EQ(v[0xF], 0);
-    EXPECT_EQ(v[x], (uint8_t) (valx >> 1));
+    EXPECT_EQ(v[x], (uint8_t)(valx >> 1));
 }
 
 TEST(CHIP8Tests, DISABLED_TestExecOp_8xy7) {
@@ -707,7 +706,7 @@ TEST(CHIP8Tests, DISABLED_TestExecOp_Fx29) {
     uint16_t curr_index_reg = chip8.get_index_reg();
     chip8.exec_op(test_opcode);
 
-    EXPECT_EQ(chip8.get_index_reg(), (uint16_t) (5*valx));
+    EXPECT_EQ(chip8.get_index_reg(), (uint16_t)(5 * valx));
 }
 
 TEST(CHIP8Tests, DISABLED_TestExecOp_Fx33) {

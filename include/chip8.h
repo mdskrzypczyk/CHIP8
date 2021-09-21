@@ -89,7 +89,7 @@ class CHIP8 {
     uint8_t get_sound_timer();
     bool get_quit();
     bool get_draw();
-    INPUT* get_input_device();
+    INPUT *get_input_device();
 
   private:
     VIDEO CHIPVIDEO;  // Graphics/Video object for handling sprites and display
