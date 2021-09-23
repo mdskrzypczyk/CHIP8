@@ -1,5 +1,10 @@
 #include "graphics.h"
 
+/**
+ * Checks the status code returned from initializing graphics in SDL.
+ * @param init_code Status code returned from SDL
+ * @return Boolean specifying if initialization was successful or not.
+ */
 bool VideoInitChecker::check_sdl_init_code(int init_code) {
     if (init_code < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
@@ -8,6 +13,11 @@ bool VideoInitChecker::check_sdl_init_code(int init_code) {
     return true;
 };
 
+/**
+ * Checks the SDL_Window pointer returned from creating a window in SDL.
+ * @param window_ptr Pointer to SDL_Window object used for graphics displayed.
+ * @return Boolean specifying if creation was successful or not.
+ */
 bool VideoInitChecker::check_sdl_create_window_code(SDL_Window *window_ptr) {
     if (window_ptr == nullptr) {
         printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
@@ -16,15 +26,10 @@ bool VideoInitChecker::check_sdl_create_window_code(SDL_Window *window_ptr) {
     return true;
 };
 
-/*
- * VIDEO
- * Description: Main constructor for VIDEO object.  Sets the pixel width/height
- *				depending on the size of the window
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Main constructor for VIDEO object.  Sets the pixel width/height depending on
+ * the size of the window
  */
-
 VIDEO::VIDEO() {
     // Set default values
     pixel_width = WINDOW_WIDTH / SCREEN_WIDTH;
@@ -35,27 +40,18 @@ VIDEO::VIDEO() {
     foreground_color = WHITE;
 }
 
-/*
- * ~VIDEO
- * Description: Main destructor for VIDEO object.  Terminates SDL program.
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Main destructor for VIDEO object.  Terminates SDL program.
  */
-
 VIDEO::~VIDEO() { close(); }
 
-/*
- * init
- * Description: Initializes SDL library and creates window/surface objects
- *				for drawing graphics.
- * Inputs: None
- * Outputs: None
- * Return Value: success - Boolean value indicating whether all components
- *				 were initialized properly or not.
- */
-
 // LCOV_EXCL_START
+/**
+ * Initializes SDL library and creates window/surface objects for drawing
+ * graphics.
+ * @return Boolean value indicating whether all components were initialized
+ * properly or not.
+ */
 bool VIDEO::init() {
     // Initialization flag
     bool success = true;
@@ -85,12 +81,8 @@ bool VIDEO::init() {
 }
 // LCOV_EXCL_STOP
 
-/*
- * handle_event
- * Description: Function for handling SDL Window events.
- * Inputs: event - The SDL_Event that occurred
- * Outputs: None
- * Return Value: None
+/**
+ * Function for handling SDL Window events.
  */
 
 // LCOV_EXCL_START
@@ -127,16 +119,11 @@ void VIDEO::handle_event(SDL_Event event) {
 }
 // LCOV_EXCL_STOP
 
-/*
- * switch_surface
- * Description: Function for acquiring window surface and redrawing
- *				the pixel map for resizing.
- * Inputs: None
- * Outputs: None
- * Return Value: None
- */
-
 // LCOV_EXCL_START
+/**
+ * Function for acquiring window surface and redrawing the pixel map for
+ * resizing.
+ */
 void VIDEO::switch_surface() {
     gSurface = SDL_GetWindowSurface(gWindow);  // Grab new window surface
     if (gSurface != nullptr) {
@@ -147,16 +134,11 @@ void VIDEO::switch_surface() {
 }
 // LCOV_EXCL_STOP
 
-/*
- * wait_for_focus
- * Description: Function that while-loops while waiting for window to regain
- * focus, keeps interpretter from proceeding while user not watching
- * Inputs: None
- * Outputs: None
- * Return Value: None
- */
-
 // LCOV_EXCL_START
+/**
+ * Function that while-loops while waiting for window to regain focus, keeps
+ * interpretter from proceeding while user not watching
+ */
 bool VIDEO::wait_for_focus() {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
@@ -166,14 +148,9 @@ bool VIDEO::wait_for_focus() {
 }
 // LCOV_EXCL_STOP
 
-/*
- * draw_pix_map
- * Description: Function for redrawing the surface using pixel map
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Function for redrawing the surface using pixel map
  */
-
 void VIDEO::draw_pix_map() {
     for (int y = 0; y < SCREEN_HEIGHT; y++) {
         for (int x = 0; x < SCREEN_WIDTH; x++) {
@@ -182,25 +159,57 @@ void VIDEO::draw_pix_map() {
     }
 }
 
+/**
+ * Getter function for width of pixels in SDL window.
+ * @return Number of window pixels corresponding to CHIP 8 pixel width.
+ */
 uint32_t VIDEO::get_pixel_width() { return pixel_width; }
+
+/**
+ * Getter function for height of pixels in SDL window.
+ * @return Number of window pixels corresponding to CHIP 8 pixel height.
+ */
 uint32_t VIDEO::get_pixel_height() { return pixel_height; }
+
+/**
+ * Getter function for width of SDL window in pixels.
+ * @return Number of pixels in width of window.
+ */
 int VIDEO::get_window_width() { return gWidth; }
+
+/**
+ * Getter function for height of SDL window in pixels.
+ * @return Number of pixels in height of window.
+ */
 int VIDEO::get_window_height() { return gHeight; }
+
+/**
+ * Getter function for background color code.
+ * @return Unsigned 32-bit integer representing color code.
+ */
 uint32_t VIDEO::get_background_color() { return background_color; }
+
+/**
+ * Getter function for foreground color code.
+ * @return Unsigned 32-bit integer representing color code.
+ */
 uint32_t VIDEO::get_foreground_color() { return foreground_color; }
 
+/**
+ * Getter function for pixel map used to represent CHIP 8  screen internally.
+ * @return Pointer to array of pixels.
+ */
 uint32_t (*VIDEO::get_pix_map())[SCREEN_WIDTH] { return pix_map; }
+
+/**
+ * Getter function for video memory used by SDL window to display graphics.
+ * @return Pointer to array of video memory.
+ */
 uint32_t *VIDEO::get_vid_mem() { return vid_mem; }
 
-/*
- * rand_color_scheme
- * Description: Function for randomizing the color scheme of the Chip-8.
- * Repaints the screen.
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Function for randomizing the color scheme of the Chip-8.
  */
-
 void VIDEO::rand_color_scheme() {
     mtx.lock();
     srand(time(nullptr));
@@ -237,17 +246,11 @@ void VIDEO::rand_color_scheme() {
     mtx.unlock();
 }
 
-/*
- * draw_pixel
- * Description: Function for drawing a pixel at a given (x, y) coordinate pair
- * for the CHIP8's display.  Because the SDL window is not a 1:1 pixel mapping,
- * we need to scale the amount of pixels colored in the window based on the
- * window size.
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Function for drawing a pixel at a given (x, y) coordinate pair for the
+ * CHIP8's display.  Because the SDL window is not a 1:1 pixel mapping, we need
+ * to scale the amount of pixels colored in the window based on the window size.
  */
-
 void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb) {
     // Do not draw pixels out of screen
     if (x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT) {
@@ -265,16 +268,11 @@ void VIDEO::draw_pixel(uint8_t x, uint8_t y, uint32_t rgb) {
     }
 }
 
-/*
- * xor_color
- * Description: Helper function for the CHIP8's Dxyn instruction, checks the
- * pixel color at a given CHIP8 (x,y) and XOR's the color.
- * Inputs: None
- * Outputs: None
- * Return Value: true/false - Indicates whether information on the screen was
- * deleted
+/**
+ * Helper function for the CHIP8's Dxyn instruction, checks the pixel color at
+ * a given CHIP8 (x,y) and XOR's the color.
+ * @return Boolean indicating whether information on the screen was deleted
  */
-
 bool VIDEO::xor_color(uint8_t x, uint8_t y) {
     // Do not draw pixels out of screen
     if (x >= SCREEN_WIDTH || y >= SCREEN_HEIGHT) {
@@ -300,30 +298,20 @@ bool VIDEO::xor_color(uint8_t x, uint8_t y) {
     return ret;
 }
 
-/*
- * show
- * Description: Function for updating the display window.  Must be called at
- * 60Hz to emulate CHIP8 display.
- * Inputs: None
- * Outputs: None
- * Return Value: None
- */
-
 // LCOV_EXCL_START
+/**
+ * Function for updating the display window.  Must be called at 60Hz to emulate
+ * CHIP8 display.
+ */
 void VIDEO::show() {
     // Update the surface
     SDL_UpdateWindowSurface(gWindow);
 }
 // LCOV_EXCL_STOP
 
-/*
- * clear
- * Description: Helper function for clearing the game display.
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Helper function for clearing the game display.
  */
-
 void VIDEO::clear() {
     // Clear the display
     for (int y = 0; y < WINDOW_HEIGHT; y++) {
@@ -340,14 +328,9 @@ void VIDEO::clear() {
     }
 }
 
-/*
- * close
- * Description: Helper function to terminate SDL window and free resources.
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Helper function to terminate SDL window and free resources.
  */
-
 void VIDEO::close() {
     // Destroy window
     SDL_DestroyWindow(gWindow);
@@ -357,6 +340,13 @@ void VIDEO::close() {
     SDL_Quit();
 }
 
+/**
+ * Converts an RGB expression of a color to one SDL understands.
+ * @param r Red level in color, 0-255
+ * @param g Green level in color, 0-255
+ * @param b Blue level in color, 0-255
+ * @return Unsigned 32-bit integer color code for SDL
+ */
 uint32_t VIDEO::get_color(uint8_t r, uint8_t g, uint8_t b) {
     return SDL_MapRGB(gSurface->format, r, g, b);
 }

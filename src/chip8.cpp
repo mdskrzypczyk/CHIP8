@@ -1,8 +1,9 @@
 #include "chip8.h"
 
-// Hexadecimal Sprite Bit Map loaded into Interpreter Area of CHIP 8 Memory
-// (0x000 - 0x1FF)
-
+/**
+ * Hexadecimal Sprite Bit Map loaded into Interpreter Area of CHIP 8 Memory
+ * (0x000 - 0x1FF)
+ */
 uint8_t SPRITE_MAP[MAP_LENGTH] = {
         0xF0, 0x90, 0x90, 0x90, 0xF0,  // Hex digit 0
         0x20, 0x60, 0x20, 0x20, 0x70,  // Hex digit 1
@@ -22,14 +23,11 @@ uint8_t SPRITE_MAP[MAP_LENGTH] = {
         0xF0, 0x80, 0xF0, 0x80, 0x80   // Hex digit F
 };
 
-// CHIP8
-// Description: Main constructor for CHIP8 object, initializes graphic
-//  components and clears all internal registers.  Sets PC to program start.
-// Loads CHIP8 memory 0x000-0x1FF with Hex Sprite data.
-// Inputs: None
-// Outputs: None
-// Return Value: None
-
+/**
+ * Main constructor for CHIP8 object, initializes graphic components and clears
+ * all internal registers.  Sets PC to program start. Loads CHIP8 memory
+ * 0x000-0x1FF with Hex Sprite data.
+ */
 CHIP8::CHIP8() {
     quit = false;
     draw = true;
@@ -71,35 +69,41 @@ CHIP8::CHIP8() {
     }
 }
 
+/**
+ * Initializes the video module used for displaying graphics.
+ * @return Boolean indicating if video module was initialized successfully.
+ */
 bool CHIP8::init_video() {
     bool success = CHIPVIDEO.init();
     CHIPVIDEO.show();
     return success;
 }
 
+/**
+ * Initializes the audio module used for producing sound.
+ * @return Boolean indicating if audio module was initialized successfully.
+ */
 bool CHIP8::init_audio() { return CHIPAUDIO.init(); }
 
 // LCOV_EXCL_START
+/**
+ * Calls the audio module to produce a tone.
+ */
 void CHIP8::play_audio() { CHIPAUDIO.play_tone(); }
 // LCOV_EXCL_STOP
 
-// ~CHIP8
-// Description: Main destructor for CHIP8 object, CHIP8 does not allocate space
-// for its own variables so we need to make sure SDL window closes properly.
-// Inputs: None
-// Outputs: None
-// Return Value: None
-
+/**
+ * Main destructor for CHIP8 object, CHIP8 does not allocate space
+ * for its own variables so we need to make sure SDL window closes properly.
+ */
 CHIP8::~CHIP8() { CHIPVIDEO.close(); }
 
-// load_program
-// Description: Reads binary file CHIP8 program and stores data into memory
-// starting at address 0x200.
-// Inputs: program_name - A string containing the file name of the program to
-// load.
-// Outputs: None
-// Return Value: true/false - Indicates of load was successful
-
+/**
+ * Reads binary file CHIP8 program and stores data into memory starting at
+ * address 0x200.
+ * @param program_name A string containing the file name of the program to load.
+ * @return Boolean indicating if load was successful
+ */
 bool CHIP8::load_program(const char *program_name) {
     // Temporary data array, clear contents so we don't load garbage
     uint8_t program_data[MAX_PROG_SIZE];
@@ -138,14 +142,12 @@ bool CHIP8::load_program(const char *program_name) {
     return true;
 }
 
-// load_state
-// Description: Reads binary file Chip-8 state and restores the state of the
-// Chip-8.
-// Inputs: state_name - A string containing the name of the file to load the
-// state from
-// Outputs: None
-// Return Value: true/false - Indicates if restore was successful
-
+/**
+ * Reads binary file Chip-8 state and restores the state of the CHIP 8
+ * @param state_name A string containing the name of the file to load the state
+ * from.
+ * @return Boolean indicating if restore was successful
+ */
 bool CHIP8::load_state(const char *state_name) {
     // Temporary array to hold state info
     uint8_t state_data[STATE_SIZE];
@@ -220,13 +222,11 @@ bool CHIP8::load_state(const char *state_name) {
     return true;
 }
 
-// save_state
-// Description: Turns internal Chip-8 state into array and writes data to file.
-// Inputs: state_name - A string containing the name of the file to save state
-// to.
-// Outputs: None
-// Return Value: true/false - Indicates if save was successful
-
+/**
+ * Turns internal Chip-8 state into array and writes data to file.
+ * @param state_name A string containing the name of the file to save state to.
+ * @return Boolean indicating if save was successful
+ */
 bool CHIP8::save_state(const char *state_name) {
     // Temporary array to hold state info
     uint8_t state_data[STATE_SIZE];
@@ -298,6 +298,10 @@ bool CHIP8::save_state(const char *state_name) {
 }
 
 // LCOV_EXCL_START
+/**
+ * Function for loading configuration file of CHIP 8.
+ * @return Boolean indicating if load was successful.
+ */
 bool CHIP8::load_config() {
     std::ifstream config_file;
     config_file.open("config.txt");
@@ -323,15 +327,12 @@ bool CHIP8::load_config() {
 }
 // LCOV_EXCL_STOP
 
-// mainloop
-// Description: The main emulation loop of CHIP8.  Grabs current opcode from
-// memory location indicated by PC, increments the PC by 2, executes the opcode,
-// checks to display new video frame at 60Hz.
-// Inputs: None
-// Outputs: None
-// Return Value: None
-
 // LCOV_EXCL_START
+/**
+ * Description: The main emulation loop of CHIP8.  Grabs current opcode from
+ * memory location indicated by PC, increments the PC by 2, executes the opcode,
+ * checks to display new video frame at 60Hz.
+ */
 void CHIP8::mainloop() {
     // Opcode and time variables
     unsigned short opcode;
@@ -380,13 +381,10 @@ void CHIP8::mainloop() {
 }
 // LCOV_EXCL_STOP
 
-// check_peripherals
-// Description: Function for handling keyboard and window updates
-// Inputs: None
-// Outputs: None
-// Return Value: None
-
 // LCOV_EXCL_START
+/**
+ * Function for handling keyboard and window updates
+ */
 void CHIP8::check_peripherals() {
     SDL_Event event;  // For processing keyboard/window updates
 
@@ -410,14 +408,13 @@ void CHIP8::check_peripherals() {
 }
 // LCOV_EXCL_STOP
 
-// draw_sprite
-// Description: Helper function for handling DXYN instruction for CHIP8.
-// Inputs: x - CHIP8 x coordinate to start drawing sprite at
-// y - CHIP8 y coordinate to start drawing sprite at
-// nibble - Number of bytes that make up the sprite
-// Outputs: None
-// Return Value: None
-
+/**
+ * Helper function for handling DXYN instruction for CHIP8.
+ * @param x CHIP8 x coordinate to start drawing sprite at
+ * @param y CHIP8 y coordinate to start drawing sprite at
+ * @param nibble Number of bytes that make up the sprite
+ * @return Boolean indicating if a collision occurred when drawing sprite.
+ */
 bool CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble) {
     // Set VF to 0
     V[0xF] = 0;
@@ -448,22 +445,18 @@ bool CHIP8::draw_sprite(uint8_t x, uint8_t y, uint8_t nibble) {
     return V[0xF] == 0;
 }
 
-// show_video
-// Description: Makes a call to the VIDEO's show function, updates the frame
-// Inputs: None
-// Outputs: None
-// Return Value: None
-
 // LCOV_EXCL_START
+/**
+ * Makes a call to the VIDEO's show function, updates the frame
+ */
 void CHIP8::show_video() { CHIPVIDEO.show(); }
 // LCOV_EXCL_STOP
 
-// exec_op
-// Description: Executes the current opcode and updates internal registers
-// Inputs: opcode - The 16-bit opcode to execute
-// Outputs: None
-// Return Value: None
-
+/**
+ * Executes the current opcode and updates internal registers
+ * @param opcode The 16-bit opcode to execute
+ * @return Boolean indicating if the screen needs to be redrawn.
+ */
 bool CHIP8::exec_op(uint16_t opcode) {
     // Increment PC
     PC += 2;
@@ -668,12 +661,18 @@ bool CHIP8::exec_op(uint16_t opcode) {
 }
 
 // Debugging functions
+/**
+ * Debugging function for printing memory contents in CHIP 8
+ */
 void CHIP8::print_mem_contents() {
     for (int i = PC_START; i < MEM_SIZE; i += 2) {
         printf("%x: %x%x\n", i, MEM[i], MEM[i + 1]);
     }
 }
 
+/**
+ * Debugging function for printing system contents in CHIP 8
+ */
 void CHIP8::print_sys_contents() {
     printf("PC: %02x  INSTR: %02x%02x  SP: %02x  I: %x  I POINTS AT: %x\n", PC,
            MEM[PC], MEM[PC + 1], SP, I, MEM[I]);
@@ -683,14 +682,68 @@ void CHIP8::print_sys_contents() {
     printf("\n");
 }
 
+/**
+ * Getter function for obtaining the program counter.
+ * @return CHIP 8 program counter
+ */
 uint16_t CHIP8::get_pc() { return PC; }
+
+/**
+ * Getter function for obtaining the quit signal.
+ * @return Quit signal for program
+ */
 bool CHIP8::get_quit() { return quit; }
+
+/**
+ * Getter function for obtaining the draw flag.
+ * @return Draw flag to update screen
+ */
 bool CHIP8::get_draw() { return draw; }
+
+/**
+ * Getter function for obtaining the stack pointer.
+ * @return CHIP 8 stack pointer
+ */
 uint8_t CHIP8::get_sp() { return SP; }
+
+/**
+ * Getter function for obtaining the pointer to stack memory.
+ * @return Pointer to stack memory used in CHIP 8
+ */
 uint16_t *CHIP8::get_stack() { return STACK; }
+
+/**
+ * Getter function for obtaining the pointer to CHIP 8 memory contents.
+ * @return Pointer to memory of CHIP 8
+ */
 uint8_t *CHIP8::get_mem() { return MEM; }
+
+/**
+ * Getter function for obtaining the pointer to internal CHIP 8 registers.
+ * @return Pointer to registers of CHIP 8
+ */
 uint8_t *CHIP8::get_reg_file() { return V; }
+
+/**
+ * Getter function for obtaining the contents of the index register.
+ * @return CHIP 8 index register
+ */
 uint16_t CHIP8::get_index_reg() { return I; }
+
+/**
+ * Getter function for obtaining the delay timer.
+ * @return CHIP 8 delay timer
+ */
 uint8_t CHIP8::get_delay_timer() { return DT; }
+
+/**
+ * Getter function for obtaining the sound timer.
+ * @return CHIP 8 sound timer
+ */
 uint8_t CHIP8::get_sound_timer() { return ST; }
+
+/**
+ * Getter function for obtaining a pointer to the input module of CHIP 8.
+ * @return Pointer to input module
+ */
 INPUT *CHIP8::get_input_device() { return &CHIPINPUT; }

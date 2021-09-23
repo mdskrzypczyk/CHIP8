@@ -41,6 +41,10 @@ static std::map<SDL_Keycode, uint8_t> keymap{
         {SDLK_v, KEY_F},    {SDL_QUIT, KEY_QUIT}, {SDLK_t, KEY_COLOR_CHANGE},
         {SDLK_p, KEY_SAVE}, {SDLK_l, KEY_LOAD}};
 
+/**
+ * Module for handling input-related activities of CHIP 8.  Handles translation
+ * of keyboard presses to emulated hexadecimal keyboard and tracks key state.
+ */
 class INPUT {
   public:
     // Constructor function

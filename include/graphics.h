@@ -18,12 +18,19 @@
 
 static std::mutex mtx;
 
+/**
+ * Helper module for verifying initialization of video-related components.
+ */
 class VideoInitChecker {
   public:
     bool check_sdl_init_code(int init_code);
     bool check_sdl_create_window_code(SDL_Window *window_ptr);
 };
 
+/**
+ * Module for handling display-related activities of CHIP 8.  Handles display
+ * window and drawing of CHIP 8 graphics to display.
+ */
 class VIDEO {
   public:
     // Constructor for VIDEO object
