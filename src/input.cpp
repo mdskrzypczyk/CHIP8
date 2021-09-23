@@ -1,39 +1,25 @@
 #include "input.h"
 
-/*
- * INPUT
- * Description: Constructor for CHIPINPUT object, initializes all keys to
- *				unpressed state.
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Constructor for CHIPINPUT object, initializes all keys to unpressed state.
  */
-
 INPUT::INPUT() {
     for (int i = 0; i < NUM_KEYS; i++) {
         key_status[i] = false;
     }
 }
 
-/*
- * ~INPUT
- * Description: Empty destructor for CHIPINPUT
- * Inputs: None
- * Outputs: None
- * Return Value: None
+/**
+ * Empty destructor for CHIPINPUT
  */
-
 INPUT::~INPUT() {}
 
-/*
- * poll_keyboard
- * Description: Updates the key status array with up/down presses on a key
- * Inputs: None
- * Outputs: None
- * Return Value: The hexadecimal value of the key that was pressed, otherwise -1
- *				 if no keys were pressed
+/**
+ * Updates the key status array with up/down presses on a key
+ *
+ * @return The hexadecimal value of the key that was pressed, otherwise -1 if no
+ * keys were pressed.
  */
-
 uint8_t INPUT::poll_keyboard(SDL_Event event) {
     uint8_t return_val = 0xFF;
 
@@ -55,6 +41,11 @@ uint8_t INPUT::poll_keyboard(SDL_Event event) {
     return return_val;
 }
 
+/**
+ * Handles pressing of keyboard keys and updates key status internally.
+ * @param sym SDL_Keycode of key pressed.
+ * @return The CHIP 8 hex keyboard value pressed.
+ */
 uint8_t INPUT::handle_keydown(SDL_Keycode sym) {
     if (keymap.count(sym) == 0) {
         return KEY_ERR;
@@ -70,6 +61,11 @@ uint8_t INPUT::handle_keydown(SDL_Keycode sym) {
     }
 }
 
+/**
+ * Handles unpressing of keyboard keys and updates key status internally.
+ * @param sym SDL_Keycode of key unpressed.
+ * @return The CHIP 8 hex keyboard value unpressed.
+ */
 uint8_t INPUT::handle_keyup(SDL_Keycode sym) {
     if (keymap.count(sym) == 0) {
         return KEY_ERR;
@@ -85,19 +81,20 @@ uint8_t INPUT::handle_keyup(SDL_Keycode sym) {
     }
 }
 
-/*
- * get_key_status
- * Description: Pulls key status information from status array
- * Inputs: None
- * Outputs: None
- * Return Value: Boolean representings if key is pressed (true) or not (false)
+/**
+ * Pulls key status information from status array
+ * @return Boolean representings if key is pressed (true) or not (false)
  */
-
 bool INPUT::get_key_status(uint8_t key) { return key_status[key]; }
 
+/**
+ * Flips key status information in status array.
+ */
 void INPUT::flip_key_status(uint8_t key) { key_status[key] = !key_status[key]; }
 
-// Debugging
+/**
+ * Debugging function for printing the keyboard status array.
+ */
 void INPUT::print_keyboard_status() {
     for (int i = 0; i < NUM_KEYS; i++) {
         if (key_status[i]) {

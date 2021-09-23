@@ -28,11 +28,17 @@
 #define MEM_OFFSET (STACK_OFFSET + 2 * STACK_SIZE)
 #define PIX_OFFSET (MEM_OFFSET + MEM_SIZE)
 
-/* Hexadecimal Sprite Bit Map loaded into Interpreter Area of CHIP 8 Memory
+/**
+ * Hexadecimal Sprite Bit Map loaded into Interpreter Area of CHIP 8 Memory
  * (0x000 - 0x1FF)
  */
 extern uint8_t SPRITE_MAP[MAP_LENGTH];
 
+/**
+ * Primary CHIP 8 module that connects individual components into one unit.
+ * Tracks the state of emulated hardware in CHIP 8 and uses underlying audio,
+ * display, and input modules for interpreting CHIP 8 roms.
+ */
 class CHIP8 {
   public:
     // Main constructor for CHIP8
