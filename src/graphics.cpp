@@ -139,7 +139,7 @@ void VIDEO::switch_surface() {
  * Function that while-loops while waiting for window to regain focus, keeps
  * interpretter from proceeding while user not watching
  */
- bool VIDEO::wait_for_focus() {
+bool VIDEO::wait_for_focus() {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         return (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED);
